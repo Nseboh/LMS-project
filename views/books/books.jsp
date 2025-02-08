@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*" %>
 <%@ page import="java.time.*" %>
+<%@ page import="java.time.temporal.ChronoUnit" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,9 +10,10 @@
     <title>JE.Library - Books</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <script>
-        function openAddBookModal() {
-            const modal = document.getElementById('addBookModal');
+        function openAddUserModal() {
+            const modal = document.getElementById('addUserModal');
             const modalContent = document.getElementById('modalContent');
             fetch('<%= request.getContextPath() %>/views/books/addBooks.jsp')
                 .then(response => response.text())
@@ -21,8 +23,8 @@
                 });
         }
 
-        function closeAddBookModal() {
-            document.getElementById('addBookModal').style.display = 'none';
+        function closeAddUserModal() {
+            document.getElementById('addUserModal').style.display = 'none';
         }
     </script>
 </head>
@@ -70,7 +72,7 @@
                     <i class="fas fa-building"></i>
                     <span>Publishers</span>
                 </div>
-                <div class="nav-item" onclick="window.location.href='issuedBooks.jsp'">
+                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/issuedBooks/lending.jsp'">
                     <i class="fas fa-book-open"></i>
                     <span>Issued Books</span>
                 </div>
@@ -89,33 +91,38 @@
                 <h1>Books</h1>
             </header>
 
+           
+
             <!-- Stats Cards -->
             <div class="stats-cards">
                 <div class="stat-card">
                     <div class="stat-header">
-                        <i class="fas fa-book"></i>
+                        <i class="fas fa-user-plus"></i>
                         <h3>Registered Books</h3>
                     </div>
                     <p class="stat-number">
                         <%
-                            // Fetch total registered books
+                            // Fetch total registered users excluding super admins
                             int totalBooks = 0;
+                            
                             try {
-                                Class.forName("com.mysql.cj.jdbc.Driver");
+                                Class.forName("com.mysql.jdbc.Driver");
                                 Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
                                 Statement stmt = conn.createStatement();
                                 ResultSet rs = stmt.executeQuery("SELECT COUNT(*) AS total FROM book");
                                 if (rs.next()) {
                                     totalBooks = rs.getInt("total");
                                 }
+                                
                                 conn.close();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
+                            out.print(totalBooks);
                         %>
-                        <%= totalBooks %>
                     </p>
                 </div>
+                
             </div>
 
             <!-- Users Table Section -->
@@ -130,26 +137,21 @@
                         <button class="back-btn" onclick="resetTable()">Back</button>
                     </div>
                     <div class="add-new-container">
-                        <button onclick="openAddBookModal()" class="add-new">Add New</button>
+                        <button onclick="openAddUserModal()" class="add-new">Add New</button>
                     </div>
                 </div>
                 <div class="table-wrapper">
                     <table id="booksTable">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>TITLE</th>
-                                <th>AUTHOR</th>
-                                <th>PUBLISHER</th>
-                                <th>ISBN</th>
-                                <th>PUBLICATION YEAR</th>
-                                <th>EDITION</th>
-                                <th>TOTAL COPIES</th>
-                                <th>AVAILABLE COPIES</th>
-                                <th>STATUS</th>
-                                <th>UPDATED AT</th>
-                                <th>ADDED DATE</th>
-                                <th>ACTION</th>
+                                <th>Book ID</th>
+                                <th>Book Title</th>
+                                <th>Author(s)</th>
+                                <th>Genre/Category</th>
+                                <th>Language</th>
+                                <th>Total Copies</th>
+                                <th>Status</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -159,7 +161,7 @@
                                     Class.forName("com.mysql.jdbc.Driver");
                                     Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
                                     Statement stmt = conn.createStatement();
-                                    ResultSet rs = stmt.executeQuery("SELECT b.book_id, b.title, a.first_name, a.last_name, p.name AS publisher_name, b.isbn, b.publication_year, b.edition, b.total_copies, b.copies_available, b.status, b.updated_at, b.created_at FROM book b LEFT JOIN author a ON b.author_id = a.author_id LEFT JOIN publisher  p ON b.publisher_id = p.publisher_id");
+                                    ResultSet rs = stmt.executeQuery("SELECT b.book_id, b.title, a.first_name, a.last_name, p.name AS publisher_name, b.isbn, b.publication_year, b.edition, b.total_copies, b.copies_available, b.status FROM book b LEFT JOIN author a ON b.author_id = a.author_id LEFT JOIN publisher  p ON b.publisher_id = p.publisher_id");
 
                                     if (!rs.isBeforeFirst()) {
                                         out.println("<tr><td colspan='11'>No books found.</td></tr>");
@@ -175,33 +177,29 @@
                                             int totalCopies = rs.getInt("total_copies");
                                             int copiesAvailable = rs.getInt("copies_available");
                                             String status = rs.getString("status");
-                                            Timestamp updatedAt = rs.getTimestamp("updated_at");
-                                            Timestamp createdAt = rs.getTimestamp("created_at");
                             %>
                             <tr>
                                 <td><%= bookId %></td>
                                 <td><%= title %></td>
                                 <td><%= authorName %></td>
-                                <td><%= publisherName %></td>
                                 <td><%= isbn %></td>
+                                <td><%= publisherName %></td>
                                 <td><%= publicationYear %></td>
                                 <td><%= edition %></td>
                                 <td><%= totalCopies %></td>
                                 <td><%= copiesAvailable %></td>
                                 <td><%= status %></td>
-                                <td><%= updatedAt != null ? updatedAt.toString() : "N/A" %></td>
-                                <td><%= createdAt != null ? createdAt.toString() : "N/A" %></td>
                                 <td>
                                     <div class="actions">
                                         <div class="tooltip">
-                                            <button class="action-btn edit-btn" onclick="editBook('<%= bookId %>')">
+                                            <button class="action-btn edit-btn" onclick="editUser('<%= bookId %>')">
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                             <span class="tooltiptext">Edit</span>
                                         </div>
                                         
                                         <div class="tooltip">
-                                            <button class="action-btn delete-btn" onclick="deleteBook('<%= bookId %>')">
+                                            <button class="action-btn delete-btn" onclick="deleteUser('<%= bookId %>')">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
                                             <span class="tooltiptext">Delete</span>
@@ -227,7 +225,7 @@
     </div>
 
     <!-- Modal for Adding book -->
-    <div id="addBookModal" class="modal" style="display:none;">
+    <div id="addUserModal" class="modal" style="display:none;">
         <div id="modalContent"></div>
     </div>
 
@@ -240,11 +238,11 @@ function closeAlert() {
 }
 
 
-function editBook(id) {
+function editPatron(id) {
     window.location.href = '<%= request.getContextPath() %>/views/books/editBooks.jsp?id=' + id;
 }
 
-function deleteBook(id) {
+function deletePatron(id) {
     if (confirm("Are you sure you want to delete this book?")) {
         window.location.href = '<%= request.getContextPath() %>/views/books/deleteBooks.jsp?id=' + id;
     }
@@ -252,7 +250,7 @@ function deleteBook(id) {
 
 function searchTable() {
     const input = document.getElementById('searchInput').value.toLowerCase();
-    const table = document.getElementById('booksTable');
+    const table = document.getElementById('bookTable');
     const tr = table.getElementsByTagName('tr');
 
     for (let i = 1; i < tr.length; i++) {
@@ -270,7 +268,7 @@ function searchTable() {
 }
 
 function resetTable() {
-    const table = document.getElementById('booksTable');
+    const table = document.getElementById('bookTable');
     const tr = table.getElementsByTagName('tr');
     for (let i = 1; i < tr.length; i++) {
         tr[i].style.display = '';
@@ -446,33 +444,6 @@ select:focus {
     .search-btn:focus, .back-btn:focus {
         outline: none; /* Remove outline */
         box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add shadow on focus */
-    }
-    .tooltip {
-        position: relative;
-        display: inline-block;
-        cursor: pointer;
-    }
-
-    .tooltip .tooltiptext {
-        visibility: hidden;
-        width: 120px;
-        background-color: black;
-        color: #fff;
-        text-align: center;
-        border-radius: 6px;
-        padding: 5px;
-        position: absolute;
-        z-index: 1;
-        bottom: 125%; /* Position above the button */
-        left: 50%;
-        margin-left: -60px; /* Center the tooltip */
-        opacity: 0; /* Hidden by default */
-        transition: opacity 0.3s; /* Fade effect */
-    }
-
-    .tooltip:hover .tooltiptext {
-        visibility: visible;
-        opacity: 1; /* Show the tooltip */
     }
 </style>
 </body>

@@ -17,72 +17,69 @@
 %>
 
 <%
+    String patronId = request.getParameter("patronId");
+    String firstName = request.getParameter("firstName");
+    String lastName = request.getParameter("lastName");
+    String age = request.getParameter("age");
+    String gender = request.getParameter("gender");
+    String address = request.getParameter("address");
+    String phone = request.getParameter("phone");
+    String email = request.getParameter("email");
+    String emergencyContact = request.getParameter("emergencyContact");
+    String membershipType = request.getParameter("membershipType");
+    String status = request.getParameter("status");
+
+    // Generate password and barcode
+    String password = generatePassword();
+    String barcode = generateBarcode();
+    System.out.println("Generated Barcode: " + barcode); // Log the generated barcode
+
+    LocalDate dateJoined = LocalDate.now();
+    LocalDate expirationDate = dateJoined.plusDays(365); // Calculate expiration date
+
+    Connection conn = null;
+    PreparedStatement pstmtPatron = null;
+    PreparedStatement pstmtContact = null;
+    PreparedStatement pstmtMembership = null;
+
     try {
-        // Get form data
-        String patronId = request.getParameter("patronId");
-        String firstName = request.getParameter("firstName");
-        String lastName = request.getParameter("lastName");
-        String email = request.getParameter("email");
-        String contact = request.getParameter("contact");
-        String address = request.getParameter("address");
-        String emergencyContact = request.getParameter("emergencyContact");
-        String membershipType = request.getParameter("membershipType");
-        String gender = request.getParameter("gender");
-        String status = request.getParameter("status");
-        String age = request.getParameter("age");
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
 
-        // Generate password and barcode
-        String password = generatePassword();
-        String barcode = generateBarcode();
-        System.out.println("Generated Barcode: " + barcode); // Log the generated barcode
+        // Insert into patron table
+        String sqlPatron = "INSERT INTO patron (patron_id, first_name, last_name, age, gender, password, barcode) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        pstmtPatron = conn.prepareStatement(sqlPatron);
+        pstmtPatron.setString(1, patronId);
+        pstmtPatron.setString(2, firstName);
+        pstmtPatron.setString(3, lastName);
+        pstmtPatron.setString(4, age);
+        pstmtPatron.setString(5, gender);
+        pstmtPatron.setString(6, password);
+        pstmtPatron.setString(7, barcode);
+        pstmtPatron.executeUpdate();
 
-        // Calculate expiry date (365 days from now)
-        LocalDate dateJoined = LocalDate.now();
-        LocalDate expirationDate = dateJoined.plusDays(365);
+        // Insert into patroncontact table
+        String sqlContact = "INSERT INTO patroncontact (patron_id, address, phone, email, emergency_contact) VALUES (?, ?, ?, ?, ?)";
+        pstmtContact = conn.prepareStatement(sqlContact);
+        pstmtContact.setString(1, patronId);
+        pstmtContact.setString(2, address);
+        pstmtContact.setString(3, phone);
+        pstmtContact.setString(4, email);
+        pstmtContact.setString(5, emergencyContact);
+        pstmtContact.executeUpdate();
 
-        // Database connection
-        Class.forName("com.mysql.jdbc.Driver");
-        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
-        
-        // Check if the patron ID already exists
-        PreparedStatement checkStmt = conn.prepareStatement("SELECT COUNT(*) FROM patron WHERE patron_id = ?");
-        checkStmt.setString(1, patronId);
-        ResultSet rs = checkStmt.executeQuery();
-        rs.next();
-        int count = rs.getInt(1);
+        // Insert into patronmembership table
+        String sqlMembership = "INSERT INTO patronmembership (patron_id, membership_type, date_joined, expiration_date, status) VALUES (?, ?, ?, ?, ?)";
+        pstmtMembership = conn.prepareStatement(sqlMembership);
+        pstmtMembership.setString(1, patronId);
+        pstmtMembership.setString(2, membershipType);
+        pstmtMembership.setDate(3, java.sql.Date.valueOf(dateJoined)); // Date joined
+        pstmtMembership.setDate(4, java.sql.Date.valueOf(expirationDate)); // Expiration date
+        pstmtMembership.setString(5, status);
+        pstmtMembership.executeUpdate();
 
-        if (count > 0) {
-            session.setAttribute("error_message", "Patron ID already exists. Please use a different ID.");
-            response.sendRedirect("addPatron.jsp");
-            return;
-        }
-
-        // Insert user data
-        String sql = "INSERT INTO patron (patron_id, first_name, last_name, email, address, " +
-                     "contact, emergency_contact, membership_type, gender, status, password, barcode, " +
-                     "date_joined, expiration_date, age) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-        PreparedStatement pstmt = conn.prepareStatement(sql);
-        pstmt.setString(1, patronId);
-        pstmt.setString(2, firstName);
-        pstmt.setString(3, lastName);
-        pstmt.setString(4, email);
-        pstmt.setString(5, address);
-        pstmt.setString(6, contact);
-        pstmt.setString(7, emergencyContact);
-        pstmt.setString(8, membershipType);
-        pstmt.setString(9, gender);
-        pstmt.setString(10, status);
-        pstmt.setString(11, password);
-        pstmt.setString(12, barcode);
-        pstmt.setDate(13, java.sql.Date.valueOf(dateJoined));
-        pstmt.setDate(14, java.sql.Date.valueOf(expirationDate));
-        pstmt.setString(15, age);
-
-        pstmt.executeUpdate();
-
-        // After successful addition
-        session.setAttribute("success_message", "patron added successfully!");
+        // Redirect to the patron list with success message
+        session.setAttribute("success_message", "Patron added successfully!");
         session.setAttribute("generated_password", password);
         session.setAttribute("generated_barcode", barcode);
         response.sendRedirect("patron.jsp");
@@ -92,9 +89,13 @@
         session.setAttribute("error_message", "SQL Error: " + sqlEx.getMessage());
         response.sendRedirect("addPatron.jsp");
     } catch (Exception e) {
-        // On error
         e.printStackTrace();
-        session.setAttribute("error_message", e.getMessage());
+        session.setAttribute("error_message", "An unexpected error occurred.");
         response.sendRedirect("addPatron.jsp");
+    } finally {
+        if (pstmtPatron != null) try { pstmtPatron.close(); } catch (SQLException e) {}
+        if (pstmtContact != null) try { pstmtContact.close(); } catch (SQLException e) {}
+        if (pstmtMembership != null) try { pstmtMembership.close(); } catch (SQLException e) {}
+        if (conn != null) try { conn.close(); } catch (SQLException e) {}
     }
 %> 

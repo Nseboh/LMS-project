@@ -1,4 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.sql.*" %>
+<%@ page import="java.io.*" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,7 +14,7 @@
         <span class="close" onclick="closeAddAuthorModal()">&times;</span>
         <div class="form-container">
             <h1>Add New Author</h1>
-            <form id="addAuthorForm" action="<%= request.getContextPath() %>/views/authors/process_addAuthor.jsp" method="POST">
+            <form id="addAuthorForm" action="<%= request.getContextPath() %>/views/authors/process_addAuthor.jsp" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="authorId">Author ID*</label>
                     <input type="text" id="authorId" name="author_id" required>
@@ -44,6 +46,10 @@
                 <div class="form-group">
                     <label for="website">Website</label>
                     <input type="text" id="website" name="website">
+                </div>
+                <div class="form-group">
+                    <label for="image_url">Author Photo</label>
+                    <input type="file" id="image_url" name="image_url" accept="image/*" required>
                 </div>
                 <div class="form-actions">
                     <button type="submit" class="submit-btn">Add Author</button>

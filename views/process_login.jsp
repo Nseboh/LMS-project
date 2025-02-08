@@ -13,7 +13,7 @@
         Class.forName("com.mysql.jdbc.Driver");
         Connection conn = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
         
-        String sql = "SELECT * FROM staffs WHERE email = ? AND password = ?";
+        String sql = "SELECT * FROM staff WHERE email = ? AND password = ?";
         PreparedStatement pstmt = conn.prepareStatement(sql); // Using PreparedStatement to prevent SQL injection
         pstmt.setString(1, email); // Setting the email parameter in the query
         pstmt.setString(2, password); // Setting the password parameter in the query
@@ -24,7 +24,7 @@
         if (rs.next()) {
             String role = rs.getString("role");
             String status = rs.getString("status");
-            session.setAttribute("staff_id", rs.getInt("staff_id"));
+            session.setAttribute("staff_id", rs.getString("staff_id"));
             session.setAttribute("staff_email", email);
             session.setAttribute("staff_role", role);
             session.setAttribute("staff_status", status);

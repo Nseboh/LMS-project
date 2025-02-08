@@ -1,7 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*" %>
+<%@ page import="java.io.*" %>
+<%@ page import="javax.servlet.*" %>
+<%@ page import="javax.servlet.http.*" %>
+<%@ page import="javax.servlet.annotation.*" %>
+
 <%
-    String authorId = request.getParameter("author_id");
+    String authorId = request.getParameter("author_id"); // Retrieve the staff ID
     String firstName = request.getParameter("first_name");
     String lastName = request.getParameter("last_name");
     String dateOfBirth = request.getParameter("date_of_birth");
@@ -9,36 +14,50 @@
     String biography = request.getParameter("biography");
     String email = request.getParameter("email");
     String website = request.getParameter("website");
+    String imagePath = ""; // Variable to hold the image path
 
+    // Handle file upload
     try {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
+        // Ensure the request is of type multipart/form-data
+        if (request.getContentType() != null && request.getContentType().startsWith("multipart/form-data")) {
+            Part filePart = request.getPart("image_url"); // Retrieves <input type="file" name="image_url">
+            if (filePart != null) { // Check if filePart is not null
+                String fileName = filePart.getSubmittedFileName();
+                String uploadPath = application.getRealPath("/") + "uploads/" + fileName; // Define your upload path
+                filePart.write(uploadPath); // Save the file
 
-        String sql = "INSERT INTO author (author_id, first_name, last_name, date_of_birth, nationality, biography, email, website, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())";
-        PreparedStatement pstmt = conn.prepareStatement(sql);
-        pstmt.setString(1, authorId);
-        pstmt.setString(2, firstName);
-        pstmt.setString(3, lastName);
-        pstmt.setDate(4, java.sql.Date.valueOf(dateOfBirth));
-        pstmt.setString(5, nationality);
-        pstmt.setString(6, biography);
-        pstmt.setString(7, email);
-        pstmt.setString(8, website);
-
-        int rowsInserted = pstmt.executeUpdate();
-        if (rowsInserted > 0) {
-            session.setAttribute("success_message", "Author added successfully!");
+                // Insert into database
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
+                String sql = "INSERT INTO authors (author_id, first_name, last_name, date_of_birth, nationality, biography, email, website, image_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+                pstmt.setString(1, authorId); // Set the  ID
+                pstmt.setString(2, firstName);
+                pstmt.setString(3, lastName);
+                pstmt.setString(4, dateOfBirth);
+                pstmt.setString(5, nationality);
+                pstmt.setString(6, biography);
+                pstmt.setString(7, email);
+                pstmt.setString(8, website);
+                pstmt.setString(9, "uploads/" + fileName); // Store the relative path in the database
+                pstmt.executeUpdate();
+                conn.close();
+                response.sendRedirect("author.jsp"); // Redirect to the author list or another page
+            } else {
+                throw new ServletException("File part is null. Please ensure a file is selected.");
+            }
         } else {
-            session.setAttribute("error_message", "Failed to add author.");
+            throw new ServletException("Request is not multipart, please check your form.");
         }
-        response.sendRedirect("author.jsp");
     } catch (SQLException sqlEx) {
         sqlEx.printStackTrace();
-        session.setAttribute("error_message", "SQL Error: " + sqlEx.getMessage());
-        response.sendRedirect("author.jsp");
+        // Optionally, set an error message in the session to display on the form page
+        session.setAttribute("error_message", "Database error: " + sqlEx.getMessage());
+        response.sendRedirect("addAuthor.jsp"); // Redirect back to the form
     } catch (Exception e) {
         e.printStackTrace();
-        session.setAttribute("error_message", "An unexpected error occurred.");
-        response.sendRedirect("author.jsp");
+        // Optionally, set an error message in the session to display on the form page
+        session.setAttribute("error_message", "Error: " + e.getMessage());
+        response.sendRedirect("addAuthor.jsp"); // Redirect back to the form
     }
 %> 

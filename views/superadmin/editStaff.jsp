@@ -7,31 +7,46 @@
     String lastName = "";
     String gender = "";
     String contact = "";
-    String address = "";
     String email = "";
-    String role = "";
+    String address = "";
     String status = "";
+    String roleName = "";
+
+    Connection conn = null;
+    PreparedStatement pstmt = null;
+    ResultSet rs = null;
 
     try {
-        Class.forName("com.mysql.jdbc.Driver");
-        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
-        PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM staffs WHERE staff_id = ?");
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
+
+        // Fetch current staff details
+        String sql = "SELECT s.first_name, s.last_name, s.gender, sc.contact, sc.email, sc.address, ss.status, sr.role_name " +
+                     "FROM staff s " +
+                     "LEFT JOIN staff_contact sc ON s.staff_id = sc.staff_id " +
+                     "LEFT JOIN staff_status ss ON s.staff_id = ss.staff_id " +
+                     "LEFT JOIN staffrole sr ON s.staff_id = sr.staff_id " +
+                     "WHERE s.staff_id = ?";
+        pstmt = conn.prepareStatement(sql);
         pstmt.setString(1, staffId);
-        ResultSet rs = pstmt.executeQuery();
+        rs = pstmt.executeQuery();
 
         if (rs.next()) {
             firstName = rs.getString("first_name");
             lastName = rs.getString("last_name");
             gender = rs.getString("gender");
             contact = rs.getString("contact");
-            address = rs.getString("address");
             email = rs.getString("email");
-            role = rs.getString("role");
+            address = rs.getString("address");
             status = rs.getString("status");
+            roleName = rs.getString("role_name");
         }
-        conn.close();
-    } catch (Exception e) {
+    } catch (SQLException e) {
         e.printStackTrace();
+    } finally {
+        if (rs != null) try { rs.close(); } catch (SQLException e) {}
+        if (pstmt != null) try { pstmt.close(); } catch (SQLException e) {}
+        if (conn != null) try { conn.close(); } catch (SQLException e) {}
     }
 %>
 <!DOCTYPE html>
@@ -41,26 +56,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Staff</title>
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/superadmin.css">
 </head>
 <body>
     <div class="modal-content">
         <h1>Edit Staff</h1>
-        <form  id="addUserForm" action="<%= request.getContextPath() %>/views/superadmin/process_editStaff.jsp" method="POST">
-            <input type="hidden" name="id" value="<%= staffId %>">
+        <form action="<%= request.getContextPath() %>/views/superadmin/process_editStaff.jsp" method="POST">
+            <input type="hidden" name="staff_id" value="<%= staffId %>">
             <div class="form-group">
-                <label for="firstName">First Name*</label>
-                <input type="text" id="firstName" name="firstName" value="<%= firstName %>" required>
+                <label for="first_name">First Name*</label>
+                <input type="text" id="first_name" name="first_name" value="<%= firstName %>" required>
             </div>
             <div class="form-group">
-                <label for="lastName">Last Name*</label>
-                <input type="text" id="lastName" name="lastName" value="<%= lastName %>" required>
+                <label for="last_name">Last Name*</label>
+                <input type="text" id="last_name" name="last_name" value="<%= lastName %>" required>
             </div>
             <div class="form-group">
                 <label for="gender">Gender*</label>
                 <select id="gender" name="gender" required>
-                    <option value="Male" <%= "Male".equals(gender) ? "selected" : "" %>>Male</option>
-                    <option value="Female" <%= "Female".equals(gender) ? "selected" : "" %>>Female</option>
-                    <option value="Other" <%= "Other".equals(gender) ? "selected" : "" %>>Other</option>
+                    <option value="Male" <%= gender.equals("Male") ? "selected" : "" %>>Male</option>
+                    <option value="Female" <%= gender.equals("Female") ? "selected" : "" %>>Female</option>
+                    <option value="Other" <%= gender.equals("Other") ? "selected" : "" %>>Other</option>
                 </select>
             </div>
             <div class="form-group">
@@ -68,19 +84,12 @@
                 <input type="text" id="contact" name="contact" value="<%= contact %>" required>
             </div>
             <div class="form-group">
-                <label for="address">Address*</label>
-                <input type="text" id="address" name="address" value="<%= address %>" required>
-            </div>
-            <div class="form-group">
                 <label for="email">Email*</label>
                 <input type="email" id="email" name="email" value="<%= email %>" required>
             </div>
             <div class="form-group">
-                <label for="role">Role*</label>
-                <select id="role" name="role" required>
-                    <option value="Superadmin" <%= "Superadmin".equals(role) ? "selected" : "" %>>Superadmin</option>
-                    <option value="Admin" <%= "Admin".equals(role) ? "selected" : "" %>>Admin</option>
-                </select>
+                <label for="address">Address*</label>
+                <input type="text" id="address" name="address" value="<%= address %>" required>
             </div>
             <div class="form-group">
                 <label for="status">Status*</label>
@@ -89,10 +98,15 @@
                     <option value="inactive" <%= status.equals("inactive") ? "selected" : "" %>>Inactive</option>
                 </select>
             </div>
-            <div class="form-actions">
-                <button type="submit" class="submit-btn">Save</button>
-                <button type="button" class="cancel-btn" onclick="window.location.href='<%= request.getContextPath() %>/views/superadmin/superadminDashboard.jsp'">Cancel</button>
+            <div class="form-group">
+                <label for="role_name">Role*</label>
+                <select id="role_name" name="role_name" required>
+                    <option value="Superadmin" <%= roleName.equals("Superadmin") ? "selected" : "" %>>Superadmin</option>
+                    <option value="Admin" <%= roleName.equals("Admin") ? "selected" : "" %>>Admin</option>
+                </select>
             </div>
+            <button type="submit" class="submit-btn">Update Staff</button>
+            <button type="button" class="cancel-btn" onclick="window.location.href='<%= request.getContextPath() %>/views/superadmin/superadminDashboard.jsp'">Cancel</button>
         </form>
     </div>
     <style>

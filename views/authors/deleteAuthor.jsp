@@ -15,7 +15,7 @@
         Class.forName("com.mysql.cj.jdbc.Driver");
         connection = DriverManager.getConnection(dbURL, dbUser, dbPassword);
 
-        String sql = "DELETE FROM author WHERE author_id = ?";
+        String sql = "DELETE FROM authors WHERE author_id = ?";
         preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setString(1, authorId);
 

@@ -8,6 +8,7 @@
     <title>JE.Library - Records</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/superadmin.css">
 </head>
 <body>
     <div class="container">
@@ -171,29 +172,6 @@
             </div>
         </main>
     </div>
-    <style>
-    /* Button Styles */
-    .search-btn, .back-btn {
-        background-color: #007BFF; /* Primary button color */
-        color: white; /* Text color */
-        padding: 10px 15px; /* Padding */
-        border: none; /* No border */
-        border-radius: 4px; /* Rounded corners */
-        cursor: pointer; /* Pointer cursor */
-        font-size: 16px; /* Font size */
-        transition: background-color 0.3s; /* Smooth transition */
-        margin-top: 10px; /* Spacing above button */
-        margin-right: 10px; /* Spacing between buttons */
-    }
-
-    .search-btn:hover, .back-btn:hover {
-        background-color: #0056b3; /* Darker blue on hover */
-    }
-
-    .search-btn:focus, .back-btn:focus {
-        outline: none; /* Remove outline */
-        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add shadow on focus */
-    }
-    </style>
+    
 </body>
 </html>

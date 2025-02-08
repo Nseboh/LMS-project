@@ -13,7 +13,7 @@
     try {
         Class.forName("com.mysql.cj.jdbc.Driver");
         Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
-        PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM author WHERE author_id = ?");
+        PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM authors WHERE author_id = ?");
         pstmt.setString(1, authorId);
         ResultSet rs = pstmt.executeQuery();
 

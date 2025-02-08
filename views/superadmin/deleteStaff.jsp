@@ -2,35 +2,52 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%
-    int staffId = Integer.parseInt(request.getParameter("id"));
+    String staffId = request.getParameter("id");
 
-    String dbURL = "jdbc:mysql://localhost:3306/lms";
-    String dbUser = "root";
-    String dbPassword = "Righteous050598$"; // Updated database password
-
-    Connection connection = null;
-    PreparedStatement preparedStatement = null;
+    Connection conn = null;
+    PreparedStatement pstmt = null;
 
     try {
         Class.forName("com.mysql.cj.jdbc.Driver");
-        connection = DriverManager.getConnection(dbURL, dbUser, dbPassword);
+        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
 
-        String sql = "DELETE FROM staffs WHERE staff_id = ?";
-        preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setInt(1, staffId);
+        // Delete from staffrole table
+        String sqlRole = "DELETE FROM staffrole WHERE staff_id = ?";
+        pstmt = conn.prepareStatement(sqlRole);
+        pstmt.setString(1, staffId);
+        pstmt.executeUpdate();
 
-        int rowsAffected = preparedStatement.executeUpdate();
-        if (rowsAffected > 0) {
-            out.println("<p>Staff deleted successfully.</p>");
-        } else {
-            out.println("<p>Error deleting staff.</p>");
-        }
+        // Delete from staff_status table
+        String sqlStatus = "DELETE FROM staff_status WHERE staff_id = ?";
+        pstmt = conn.prepareStatement(sqlStatus);
+        pstmt.setString(1, staffId);
+        pstmt.executeUpdate();
+
+        // Delete from staff_contact table
+        String sqlContact = "DELETE FROM staff_contact WHERE staff_id = ?";
+        pstmt = conn.prepareStatement(sqlContact);
+        pstmt.setString(1, staffId);
+        pstmt.executeUpdate();
+
+        // Delete from staff table
+        String sqlStaff = "DELETE FROM staff WHERE staff_id = ?";
+        pstmt = conn.prepareStatement(sqlStaff);
+        pstmt.setString(1, staffId);
+        pstmt.executeUpdate();
+
+        // Redirect to the dashboard with a success message
+        session.setAttribute("delete_success_message", "Staff deleted successfully!");
+        response.sendRedirect("superadminDashboard.jsp");
+    } catch (SQLException e) {
+        e.printStackTrace();
+        session.setAttribute("delete_error_message", "Error deleting staff: " + e.getMessage());
+        response.sendRedirect("superadminDashboard.jsp");
     } catch (Exception e) {
         e.printStackTrace();
-        out.println("<p>Error: " + e.getMessage() + "</p>");
+        session.setAttribute("delete_error_message", "An unexpected error occurred: " + e.getMessage());
+        response.sendRedirect("superadminDashboard.jsp");
     } finally {
-        if (preparedStatement != null) try { preparedStatement.close(); } catch (SQLException ignore) {}
-        if (connection != null) try { connection.close(); } catch (SQLException ignore) {}
+        if (pstmt != null) try { pstmt.close(); } catch (SQLException e) {}
+        if (conn != null) try { conn.close(); } catch (SQLException e) {}
     }
-%>
-<a href="superadminDashboard.jsp">Back to Dashboard</a> 
+%> 

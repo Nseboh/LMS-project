@@ -15,24 +15,32 @@
     String age = "";
 
     try {
-        Class.forName("com.mysql.jdbc.Driver");
+        Class.forName("com.mysql.cj.jdbc.Driver");
         Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
-        PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM patron WHERE patron_id = ?");
+
+        // Fetch patron details
+        String sql = "SELECT p.first_name, p.last_name, p.age, p.gender, pc.address, pc.phone, pc.email, pc.emergency_contact, pm.membership_type, pm.status " +
+                     "FROM patron p " +
+                     "LEFT JOIN patroncontact pc ON p.patron_id = pc.patron_id " +
+                     "LEFT JOIN patronmembership pm ON p.patron_id = pm.patron_id " +
+                     "WHERE p.patron_id = ?";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
         pstmt.setString(1, patronId);
         ResultSet rs = pstmt.executeQuery();
 
         if (rs.next()) {
             firstName = rs.getString("first_name");
             lastName = rs.getString("last_name");
-            email = rs.getString("email");
-            contact = rs.getString("contact");
+            age = rs.getString("age");
+            gender = rs.getString("gender");
             address = rs.getString("address");
+            contact = rs.getString("phone");
+            email = rs.getString("email");
             emergencyContact = rs.getString("emergency_contact");
             membershipType = rs.getString("membership_type");
-            gender = rs.getString("gender");
             status = rs.getString("status");
-            age = rs.getString("age");
         }
+
         conn.close();
     } catch (Exception e) {
         e.printStackTrace();
@@ -49,8 +57,8 @@
 <body>
     <div class="modal-content">
         <h1>Edit Patron</h1>
-        <form  id="addPatronForm" action="<%= request.getContextPath() %>/views/patron/process_editPatron.jsp" method="POST">
-            <input type="hidden" name="id" value="<%= patronId %>">
+        <form  id="addUserForm" action="<%= request.getContextPath() %>/views/patron/process_editPatron.jsp" method="POST">
+            <input type="hidden" name="patronId" value="<%= patronId %>">
             <div class="form-group">
                 <label for="firstName">First Name*</label>
                 <input type="text" id="firstName" name="firstName" value="<%= firstName %>" required>
@@ -60,16 +68,27 @@
                 <input type="text" id="lastName" name="lastName" value="<%= lastName %>" required>
             </div>
             <div class="form-group">
-                <label for="email">Email*</label>
-                <input type="email" id="email" name="email" value="<%= email %>" required>
+                <label for="age">Age*</label>
+                <input type="text" id="age" name="age" value="<%= age %>" required>
+            </div>
+            <div class="form-group">
+                <label for="gender">Gender*</label>
+                <select id="gender" name="gender" required>
+                    <option value="Male" <%= gender.equals("Male") ? "selected" : "" %>>Male</option>
+                    <option value="Female" <%= gender.equals("Female") ? "selected" : "" %>>Female</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="address">Address*</label>
+                <input type="text" id="address" name="address" value="<%= address %>" required>
             </div>
             <div class="form-group">
                 <label for="contact">Contact*</label>
                 <input type="tel" id="contact" name="contact" value="<%= contact %>" required>
             </div>
             <div class="form-group">
-                <label for="address">Address*</label>
-                <input type="text" id="address" name="address" value="<%= address %>" required>
+                <label for="email">Email*</label>
+                <input type="email" id="email" name="email" value="<%= email %>" required>
             </div>
             <div class="form-group">
                 <label for="emergencyContact">Emergency Contact*</label>
@@ -80,13 +99,7 @@
                 <select id="membershipType" name="membershipType" required>
                     <option value="Standard" <%= membershipType.equals("Standard") ? "selected" : "" %>>Standard</option>
                     <option value="Premium" <%= membershipType.equals("Premium") ? "selected" : "" %>>Premium</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="gender">Gender*</label>
-                <select id="gender" name="gender" required>
-                    <option value="Male" <%= gender.equals("Male") ? "selected" : "" %>>Male</option>
-                    <option value="Female" <%= gender.equals("Female") ? "selected" : "" %>>Female</option>
+                    <option value="VIP" <%= membershipType.equals("VIP") ? "selected" : "" %>>VIP</option>
                 </select>
             </div>
             <div class="form-group">
@@ -96,13 +109,9 @@
                     <option value="Inactive" <%= status.equals("Inactive") ? "selected" : "" %>>Inactive</option>
                 </select>
             </div>
-            <div class="form-group">
-                <label for="age">Age</label>
-                <input type="number" id="age" name="age" value="<%= age %>">
-            </div>
             <div class="form-actions">
                 <button type="submit" class="submit-btn">Update Patron</button>
-                <button type="button" class="cancel-btn" onclick="window.location.href='<%= request.getContextPath() %>/views/patron/patron c.jsp'">Cancel</button>
+                <button type="button" class="cancel-btn" onclick="window.location.href='<%= request.getContextPath() %>/views/patron/patron.jsp'">Cancel</button>
             </div>
         </form>
     </div>

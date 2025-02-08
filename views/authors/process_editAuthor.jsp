@@ -14,7 +14,7 @@
         Class.forName("com.mysql.cj.jdbc.Driver");
         Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
 
-        String sql = "UPDATE author SET first_name=?, last_name=?, date_of_birth=?, nationality=?, biography=?, email=?, website=? WHERE author_id=?";
+        String sql = "UPDATE authors SET first_name=?, last_name=?, date_of_birth=?, nationality=?, biography=?, email=?, website=? WHERE author_id=?";
         PreparedStatement pstmt = conn.prepareStatement(sql);
         pstmt.setString(1, firstName);
         pstmt.setString(2, lastName);

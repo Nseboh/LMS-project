@@ -8,6 +8,7 @@
     <title>JE.Library - Authors</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/superadmin.css">
     <script>
         function openAddAuthorModal() {
             const modal = document.getElementById('addAuthorModal');
@@ -39,7 +40,7 @@
             <nav class="sidebar-nav">
                 <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/superadmin/superadminDashboard.jsp'">
                     <i class="fas fa-users"></i>
-                    <span>Staffs</span>
+                    <span>Staff</span>
                 </div>
                 <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/patron/patron.jsp'">
                     <i class="fas fa-users"></i>
@@ -103,7 +104,7 @@
                                 Class.forName("com.mysql.cj.jdbc.Driver");
                                 Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
                                 Statement stmt = conn.createStatement();
-                                ResultSet rs = stmt.executeQuery("SELECT COUNT(*) AS total FROM author");
+                                ResultSet rs = stmt.executeQuery("SELECT COUNT(*) AS total FROM authors");
                                 if (rs.next()) {
                                     totalAuthors = rs.getInt("total");
                                 }
@@ -136,15 +137,10 @@
                     <table id="authorsTable">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>NAME</th>
-                                <th>DATE OF BIRTH</th>
-                                <th>NATIONALITY</th>
-                                <th>BIOGRAPHY</th>
-                                <th>EMAIL</th>
-                                <th>WEBSITE</th>
-                                <th>CREATED AT</th>
-                                <th>ACTION</th>
+                                <th>Author ID</th>
+                                <th>Name</th>
+                                <th>Created At</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -154,7 +150,7 @@
                                     Class.forName("com.mysql.cj.jdbc.Driver");
                                     Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
                                     Statement stmt = conn.createStatement();
-                                    ResultSet rs = stmt.executeQuery("SELECT * FROM author");
+                                    ResultSet rs = stmt.executeQuery("SELECT * FROM authors");
 
                                     if (!rs.isBeforeFirst()) {
                                         out.println("<tr><td colspan='8'>No authors found.</td></tr>");
@@ -162,22 +158,12 @@
                                         while (rs.next()) {
                                             String authorId = rs.getString("author_id");
                                             String fullName = rs.getString("first_name") + " " + rs.getString("last_name");
-                                            Date dob = rs.getDate("date_of_birth");
-                                            String nationality = rs.getString("nationality");
                                             String biography = rs.getString("biography");
-                                            String email = rs.getString("email");
-                                            String website = rs.getString("website");
-                                            Timestamp createdAt = rs.getTimestamp("created_at");
                             %>
                             <tr>
                                 <td><%= authorId %></td>
-                                <td><%= fullName %></td>
-                                <td><%= dob != null ? dob.toString() : "N/A" %></td>
-                                <td><%= nationality %></td>
-                                <td><%= biography %></td>
-                                <td><%= email %></td>
-                                <td><%= website %></td>
-                                <td><%= createdAt != null ? createdAt.toLocalDateTime() : "N/A" %></td>
+                                <td><a href="biography.jsp?author_id=<%= authorId %>"><%= fullName %></a></td>
+                                <td><%= rs.getDate("created_at") %></td>
                                 <td>
                                     <div class="actions">
                                         <div class="tooltip">
@@ -216,6 +202,14 @@
     <!-- Modal for Adding Author -->
     <div id="addAuthorModal" class="modal" style="display:none;">
         <div id="modalContent"></div>
+    </div>
+
+    <!-- Modal for Author Biography -->
+    <div id="biographyModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeBiographyModal()">&times;</span>
+            <div id="modalContent"></div>
+        </div>
     </div>
 
 <script>
@@ -263,203 +257,21 @@ function resetTable() {
     }
     document.getElementById('searchInput').value = '';
 }
+
+function fetchBiography(authorId) {
+    fetch('biography.jsp?author_id=' + authorId)
+        .then(response => response.text())
+        .then(data => {
+            // Assuming the biography.jsp returns the full HTML content
+            document.getElementById('modalContent').innerHTML = data;
+            document.getElementById('biographyModal').style.display = 'block';
+        })
+        .catch(error => console.error('Error fetching biography:', error));
+}
+
+function closeBiographyModal() {
+    document.getElementById('biographyModal').style.display = 'none';
+}
 </script>
-
-<style>
-/* Modal styles */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgb(0,0,0);
-    background-color: rgba(0,0,0,0.4);
-    padding-top: 60px;
-}
-
-.modal-content {
-    background-color: #fefefe;
-    margin: 5% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
-}
-
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-/* Modal Background */
-.modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1000; /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgba(0, 0, 0, 0.7); /* Dark background with opacity */
-}
-
-/* Modal Content */
-.modal-content {
-    background-color: #fff; /* White background */
-    margin: 10% auto; /* Centered */
-    padding: 20px;
-    border-radius: 8px; /* Rounded corners */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
-    width: 90%; /* Responsive width */
-    max-width: 500px; /* Max width */
-}
-
-/* Close Button */
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-    color: #000; /* Change color on hover */
-    text-decoration: none;
-    cursor: pointer;
-}
-
-/* Form Container */
-.form-container {
-    display: flex;
-    flex-direction: column; /* Stack elements vertically */
-}
-
-/* Form Elements */
-.form-group {
-    margin-bottom: 15px; /* Spacing for form groups */
-}
-
-label {
-    margin-bottom: 5px; /* Spacing for labels */
-    font-weight: bold; /* Bold labels */
-    color: #333; /* Darker text color */
-}
-
-input[type="text"],
-input[type="tel"],
-input[type="email"],
-select {
-    padding: 10px; /* Padding for inputs */
-    border: 1px solid #ccc; /* Light border */
-    border-radius: 4px; /* Rounded corners */
-    font-size: 16px; /* Font size */
-    width: 100%; /* Full width */
-    transition: border-color 0.3s; /* Smooth transition */
-}
-
-input[type="text"]:focus,
-input[type="tel"]:focus,
-input[type="email"]:focus,
-select:focus {
-    border-color: #007BFF; /* Blue border on focus */
-    outline: none; /* Remove outline */
-}
-
-/* Buttons */
-.submit-btn {
-    background-color: #007BFF; /* Primary button color */
-    color: white; /* Text color */
-    padding: 10px; /* Padding */
-    border: none; /* No border */
-    border-radius: 4px; /* Rounded corners */
-    cursor: pointer; /* Pointer cursor */
-    font-size: 16px; /* Font size */
-    transition: background-color 0.3s; /* Smooth transition */
-    margin-top: 10px; /* Spacing above button */
-}
-
-.submit-btn:hover {
-    background-color: #0056b3; /* Darker blue on hover */
-}
-
-.cancel-btn {
-    background-color: #ccc; /* Gray color for cancel */
-    color: black; /* Text color */
-    padding: 10px; /* Padding */
-    border: none; /* No border */
-    border-radius: 4px; /* Rounded corners */
-    cursor: pointer; /* Pointer cursor */
-    font-size: 16px; /* Font size */
-    margin-left: 10px; /* Spacing between buttons */
-    margin-top: 10px; /* Spacing above button */
-}
-
-.cancel-btn:hover {
-    background-color: #aaa; /* Darker gray on hover */
-}
-/* Button Styles */
-    .search-btn, .back-btn {
-        background-color: #007BFF; /* Primary button color */
-        color: white; /* Text color */
-        padding: 10px 15px; /* Padding */
-        border: none; /* No border */
-        border-radius: 4px; /* Rounded corners */
-        cursor: pointer; /* Pointer cursor */
-        font-size: 16px; /* Font size */
-        transition: background-color 0.3s; /* Smooth transition */
-        margin-top: 10px; /* Spacing above button */
-        margin-right: 10px; /* Spacing between buttons */
-    }
-
-    .search-btn:hover, .back-btn:hover {
-        background-color: #0056b3; /* Darker blue on hover */
-    }
-
-    .search-btn:focus, .back-btn:focus {
-        outline: none; /* Remove outline */
-        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add shadow on focus */
-    }
-    .tooltip {
-        position: relative;
-        display: inline-block;
-        cursor: pointer;
-    }
-
-    .tooltip .tooltiptext {
-        visibility: hidden;
-        width: 120px;
-        background-color: black;
-        color: #fff;
-        text-align: center;
-        border-radius: 6px;
-        padding: 5px;
-        position: absolute;
-        z-index: 1;
-        bottom: 125%; /* Position above the button */
-        left: 50%;
-        margin-left: -60px; /* Center the tooltip */
-        opacity: 0; /* Hidden by default */
-        transition: opacity 0.3s; /* Fade effect */
-    }
-
-    .tooltip:hover .tooltiptext {
-        visibility: visible;
-        opacity: 1; /* Show the tooltip */
-    }
-</style>
 </body>
 </html>
