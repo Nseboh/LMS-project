@@ -10,6 +10,7 @@
     <title>JE.Library - Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/superadmin.css">
     
     <script>
         function openAddUserModal() {
@@ -25,6 +26,30 @@
 
         function closeAddUserModal() {
             document.getElementById('addUserModal').style.display = 'none';
+        }
+
+        function showModal(message) {
+            const modal = document.getElementById('successModal');
+            const modalMessage = document.getElementById('modalMessage');
+            modalMessage.innerText = message;
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('successModal').style.display = 'none';
+        }
+
+        function openModal(message, password) {
+            const modal = document.getElementById('successModal');
+            const modalMessage = document.getElementById('modalMessage');
+            const modalPassword = document.getElementById('passwordMessage');
+            modalMessage.innerText = message;
+            modalPassword.innerText = password;
+            modal.style.display = 'block';
+        }
+
+        function closePasswordModal() {
+            document.getElementById('passwordModal').style.display = 'none';
         }
     </script>
 </head>
@@ -42,7 +67,7 @@
             <nav class="sidebar-nav">
                 <div class="nav-item active">
                     <i class="fas fa-users"></i>
-                    <span>Staffs</span>
+                    <span>Staff</span>
                 </div>
                 <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/patron/patron.jsp'">
                     <i class="fas fa-users"></i>
@@ -111,11 +136,11 @@
                 <div class="stat-card">
                     <div class="stat-header">
                         <i class="fas fa-user-plus"></i>
-                        <h3>Registered Staffs</h3>
+                        <h3>Registered Staff</h3>
                     </div>
                     <p class="stat-number">
                         <%
-                            // Fetch total registered users excluding super admins
+                            // Fetch total registered Staff
                             int totalUsers = 0;
                             int expiredUsers = 0;
                             int maleUsers = 0;
@@ -124,15 +149,15 @@
                                 Class.forName("com.mysql.jdbc.Driver");
                                 Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
                                 Statement stmt = conn.createStatement();
-                                ResultSet rs = stmt.executeQuery("SELECT COUNT(*) AS total FROM staffs");
+                                ResultSet rs = stmt.executeQuery("SELECT COUNT(*) AS total FROM staff");
                                 if (rs.next()) {
                                     totalUsers = rs.getInt("total");
                                 }
-                                rs = stmt.executeQuery("SELECT COUNT(*) AS male FROM staffs WHERE gender = 'Male'");
+                                rs = stmt.executeQuery("SELECT COUNT(*) AS male FROM staff WHERE gender = 'Male'");
                                 if (rs.next()) {
                                     maleUsers = rs.getInt("Male");
                                 }
-                                rs = stmt.executeQuery("SELECT COUNT(*) AS female FROM staffs WHERE gender = 'Female'");
+                                rs = stmt.executeQuery("SELECT COUNT(*) AS female FROM staff WHERE gender = 'Female'");
                                 if (rs.next()) {
                                     femaleUsers = rs.getInt("Female");
                                 }
@@ -174,7 +199,7 @@
                         <h2>Staffs Table</h2>
                     </div>
                     <div class="search-container">
-                        <input type="search" id="searchInput" placeholder="Search Staffs" class="search-input" />
+                        <input type="search" id="searchInput" placeholder="Search Staff" class="search-input" />
                         <button class="search-btn" onclick="searchStaffs()">Search</button>
                         <button class="back-btn" onclick="resetTable()">Back</button>
                     </div>
@@ -186,61 +211,78 @@
                     <table id="usersTable">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>NAME</th>
-                                <th>GENDER</th>
-                                <th>CONTACT</th>
-                                <th>ADDRESS</th>
-                                <th>CREATED AT</th>
-                                <th>ROLE</th>
-                                <th>STATUS</th>
-                                <th>ACTION</th>
+                                <th>Staff ID</th>
+                                <th>Name</th>
+                                <th>Gender</th>
+                                <th>Contact</th>
+                                <th>Email</th>
+                                <th>Address</th>
+                                <th>Status</th>
+                                <th>Role</th>
+                                <th>Created At</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <% 
-                                // Fetch users from the database excluding super admins
+                            <%
+                                // Database connection
+                                Connection conn = null;
+                                Statement stmt = null;
+                                ResultSet rs = null;
+
                                 try {
-                                    Class.forName("com.mysql.jdbc.Driver");
-                                    Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
-                                    Statement stmt = conn.createStatement();
-                                    ResultSet rs = stmt.executeQuery("SELECT * FROM staffs");
+                                    Class.forName("com.mysql.cj.jdbc.Driver");
+                                    conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
+                                    stmt = conn.createStatement();
+                                    String sql = "SELECT s.staff_id, CONCAT(s.first_name, ' ', s.last_name) AS full_name, s.gender, sc.contact, sc.email, sc.address, ss.status, sr.role_name, s.created_at, s.password " +
+                                                 "FROM staff s " +
+                                                 "LEFT JOIN staff_contact sc ON s.staff_id = sc.staff_id " +
+                                                 "LEFT JOIN staff_status ss ON s.staff_id = ss.staff_id " +
+                                                 "LEFT JOIN staffrole sr ON s.staff_id = sr.staff_id";
+                                    rs = stmt.executeQuery(sql);
 
                                     if (!rs.isBeforeFirst()) {
-                                        out.println("<tr><td colspan='9'>No staffs found.</td></tr>");
+                                        out.println("<tr><td colspan='11'>No staff found.</td></tr>");
                                     } else {
                                         while (rs.next()) {
-                                            String id = rs.getString("staff_id");
-                                            String name = rs.getString("first_name") + " " + rs.getString("last_name");
+                                            String staffId = rs.getString("staff_id");
+                                            String fullName = rs.getString("full_name");
                                             String gender = rs.getString("gender");
                                             String contact = rs.getString("contact");
+                                            String email = rs.getString("email");
                                             String address = rs.getString("address");
-                                            Date createdAt = rs.getDate("created_at");
-                                            String role = rs.getString("role");
                                             String status = rs.getString("status");
-
-                                            
+                                            String roleName = rs.getString("role_name");
+                                            Timestamp createdAt = rs.getTimestamp("created_at");
                             %>
                             <tr>
-                                <td><%= id %></td>
-                                <td><%= name %></td>
+                                <td><%= staffId %></td>
+                                <td><%= fullName %></td>
                                 <td><%= gender %></td>
                                 <td><%= contact %></td>
+                                <td><%= email %></td>
                                 <td><%= address %></td>
-                                <td><%= createdAt %></td>
-                                <td><%= role %></td>
                                 <td><%= status %></td>
+                                <td><%= roleName %></td>
+                                <td><%= createdAt != null ? createdAt.toString() : "N/A" %></td>
                                 <td>
                                     <div class="actions">
                                         <div class="tooltip">
-                                            <button class="action-btn edit-btn" onclick="editUser('<%= id %>')">
+                                            <button class="action-btn view-btn" onclick="viewPassword('<%= rs.getString("password") %>')">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <span class="tooltiptext">View</span>
+                                        </div>
+                                        
+                                        <div class="tooltip">
+                                            <button class="action-btn edit-btn" onclick="editUser('<%= staffId %>')">
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                             <span class="tooltiptext">Edit</span>
                                         </div>
                                         
                                         <div class="tooltip">
-                                            <button class="action-btn delete-btn" onclick="deleteUser('<%= id %>')">
+                                            <button class="action-btn delete-btn" onclick="deleteUser('<%= staffId %>')">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
                                             <span class="tooltiptext">Delete</span>
@@ -249,13 +291,16 @@
                                     </div>
                                 </td>
                             </tr>
-                            <% 
+                            <%
                                         }
                                     }
-                                    conn.close();
-                                } catch (Exception e) {
+                                } catch (SQLException e) {
                                     e.printStackTrace();
-                                    out.println("<tr><td colspan='9'>Error fetching staffs: " + e.getMessage() + "</td></tr>");
+                                    out.println("<tr><td colspan='11'>Error fetching staffs: " + e.getMessage() + "</td></tr>");
+                                } finally {
+                                    if (rs != null) try { rs.close(); } catch (SQLException e) {}
+                                    if (stmt != null) try { stmt.close(); } catch (SQLException e) {}
+                                    if (conn != null) try { conn.close(); } catch (SQLException e) {}
                                 }
                             %>
                         </tbody>
@@ -265,11 +310,50 @@
         </main>
     </div>
 
-    
+    <!-- Success and Error Messages -->
+    <%
+        String deleteSuccessMessage = (String) session.getAttribute("delete_success_message");
+        String deleteErrorMessage = (String) session.getAttribute("delete_error_message");
+
+        if (deleteSuccessMessage != null) {
+    %>
+        <script>
+            showModal("<%= deleteSuccessMessage %>");
+        </script>
+    <%
+            session.removeAttribute("delete_success_message");
+        }
+        if (deleteErrorMessage != null) {
+    %>
+        <script>
+            showModal("<%= deleteErrorMessage %>");
+        </script>
+    <%
+            session.removeAttribute("delete_error_message");
+        }
+    %>
 
     <!-- Modal for Adding User -->
     <div id="addUserModal" class="modal" style="display:none;">
         <div id="modalContent"></div>
+    </div>
+
+    <!-- Modal for Displaying Password -->
+    <div id="passwordModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close" onclick="closePasswordModal()">&times;</span>
+            <h2>Password</h2>
+            <p id="passwordMessage"></p>
+        </div>
+    </div>
+
+    <!-- Modal for Success Message -->
+    <div id="successModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2><i class="fas fa-check-circle"></i> Success</h2>
+            <p id="modalMessage"></p>
+        </div>
     </div>
 
 <script>
@@ -279,9 +363,6 @@ function closeAlert() {
         alert.style.display = 'none';
     }
 }
-
-
-
 
 function editUser(id) {
     window.location.href = '<%= request.getContextPath() %>/views/superadmin/editStaff.jsp?id=' + id;
@@ -320,203 +401,21 @@ function resetTable() {
     }
     document.getElementById('searchInput').value = '';
 }
+
+function viewPassword(password) {
+    const modal = document.getElementById('passwordModal');
+    const passwordMessage = document.getElementById('passwordMessage');
+    passwordMessage.innerText = password;
+    modal.style.display = 'block';
+}
+
+// Close the modal when clicking outside of it
+window.onclick = function(event) {
+    const modal = document.getElementById('passwordModal');
+    if (event.target == modal) {
+        closePasswordModal();
+    }
+}
 </script>
-
-<style>
-/* Modal styles */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgb(0,0,0);
-    background-color: rgba(0,0,0,0.4);
-    padding-top: 60px;
-}
-
-.modal-content {
-    background-color: #fefefe;
-    margin: 5% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
-}
-
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-/* Modal Background */
-.modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1000; /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgba(0, 0, 0, 0.7); /* Dark background with opacity */
-}
-
-/* Modal Content */
-.modal-content {
-    background-color: #fff; /* White background */
-    margin: 10% auto; /* Centered */
-    padding: 20px;
-    border-radius: 8px; /* Rounded corners */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
-    width: 90%; /* Responsive width */
-    max-width: 500px; /* Max width */
-}
-
-/* Close Button */
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-    color: #000; /* Change color on hover */
-    text-decoration: none;
-    cursor: pointer;
-}
-
-/* Form Container */
-.form-container {
-    display: flex;
-    flex-direction: column; /* Stack elements vertically */
-}
-
-/* Form Elements */
-.form-group {
-    margin-bottom: 15px; /* Spacing for form groups */
-}
-
-label {
-    margin-bottom: 5px; /* Spacing for labels */
-    font-weight: bold; /* Bold labels */
-    color: #333; /* Darker text color */
-}
-
-input[type="text"],
-input[type="tel"],
-input[type="email"],
-select {
-    padding: 10px; /* Padding for inputs */
-    border: 1px solid #ccc; /* Light border */
-    border-radius: 4px; /* Rounded corners */
-    font-size: 16px; /* Font size */
-    width: 100%; /* Full width */
-    transition: border-color 0.3s; /* Smooth transition */
-}
-
-input[type="text"]:focus,
-input[type="tel"]:focus,
-input[type="email"]:focus,
-select:focus {
-    border-color: #007BFF; /* Blue border on focus */
-    outline: none; /* Remove outline */
-}
-
-/* Buttons */
-.submit-btn {
-    background-color: #007BFF; /* Primary button color */
-    color: white; /* Text color */
-    padding: 10px; /* Padding */
-    border: none; /* No border */
-    border-radius: 4px; /* Rounded corners */
-    cursor: pointer; /* Pointer cursor */
-    font-size: 16px; /* Font size */
-    transition: background-color 0.3s; /* Smooth transition */
-    margin-top: 10px; /* Spacing above button */
-}
-
-.submit-btn:hover {
-    background-color: #0056b3; /* Darker blue on hover */
-}
-
-.cancel-btn {
-    background-color: #ccc; /* Gray color for cancel */
-    color: black; /* Text color */
-    padding: 10px; /* Padding */
-    border: none; /* No border */
-    border-radius: 4px; /* Rounded corners */
-    cursor: pointer; /* Pointer cursor */
-    font-size: 16px; /* Font size */
-    margin-left: 10px; /* Spacing between buttons */
-    margin-top: 10px; /* Spacing above button */
-}
-
-.cancel-btn:hover {
-    background-color: #aaa; /* Darker gray on hover */
-}
-/* Button Styles */
-    .search-btn, .back-btn {
-        background-color: #007BFF; /* Primary button color */
-        color: white; /* Text color */
-        padding: 10px 15px; /* Padding */
-        border: none; /* No border */
-        border-radius: 4px; /* Rounded corners */
-        cursor: pointer; /* Pointer cursor */
-        font-size: 16px; /* Font size */
-        transition: background-color 0.3s; /* Smooth transition */
-        margin-top: 10px; /* Spacing above button */
-        margin-right: 10px; /* Spacing between buttons */
-    }
-
-    .search-btn:hover, .back-btn:hover {
-        background-color: #0056b3; /* Darker blue on hover */
-    }
-
-    .search-btn:focus, .back-btn:focus {
-        outline: none; /* Remove outline */
-        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add shadow on focus */
-    }
-    .tooltip {
-        position: relative;
-        display: inline-block;
-        cursor: pointer;
-    }
-
-    .tooltip .tooltiptext {
-        visibility: hidden;
-        width: 120px;
-        background-color: black;
-        color: #fff;
-        text-align: center;
-        border-radius: 6px;
-        padding: 5px;
-        position: absolute;
-        z-index: 1;
-        bottom: 125%; /* Position above the button */
-        left: 50%;
-        margin-left: -60px; /* Center the tooltip */
-        opacity: 0; /* Hidden by default */
-        transition: opacity 0.3s; /* Fade effect */
-    }
-
-    .tooltip:hover .tooltiptext {
-        visibility: visible;
-        opacity: 1; /* Show the tooltip */
-    }
-</style>
 </body>
 </html>
