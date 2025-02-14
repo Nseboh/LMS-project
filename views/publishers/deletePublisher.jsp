@@ -2,35 +2,35 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%
-    int publisherId = Integer.parseInt(request.getParameter("id"));
-
-    String dbURL = "jdbc:mysql://localhost:3306/lms";
-    String dbUser = "root";
-    String dbPassword = "Righteous050598$"; // Updated database password
-
-    Connection connection = null;
-    PreparedStatement preparedStatement = null;
+    String publisherId = request.getParameter("id");
 
     try {
         Class.forName("com.mysql.cj.jdbc.Driver");
-        connection = DriverManager.getConnection(dbURL, dbUser, dbPassword);
+        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
 
-        String sql = "DELETE FROM publisher WHERE publisher_id = ?";
-        preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setInt(1, publisherId);
+        // Delete from publishercontact table
+        String sqlContact = "DELETE FROM publishercontact WHERE publisher_id = ?";
+        PreparedStatement pstmtContact = conn.prepareStatement(sqlContact);
+        pstmtContact.setString(1, publisherId);
+        pstmtContact.executeUpdate();
 
-        int rowsAffected = preparedStatement.executeUpdate();
-        if (rowsAffected > 0) {
-            session.setAttribute("success_message", "Publisher deleted successfully.");
-        } else {
-            session.setAttribute("error_message", "Error deleting publisher.");
-        }
+        // Delete from publisher table
+        String sqlPublisher = "DELETE FROM publisher WHERE publisher_id = ?";
+        PreparedStatement pstmtPublisher = conn.prepareStatement(sqlPublisher);
+        pstmtPublisher.setString(1, publisherId);
+        pstmtPublisher.executeUpdate();
+
+        // After successful deletion
+        session.setAttribute("success_message", "Publisher deleted successfully!");
+        response.sendRedirect("publisher.jsp");
+
+    } catch (SQLException sqlEx) {
+        sqlEx.printStackTrace();
+        session.setAttribute("error_message", "SQL Error: " + sqlEx.getMessage());
+        response.sendRedirect("publisher.jsp");
     } catch (Exception e) {
         e.printStackTrace();
-        session.setAttribute("error_message", "Error: " + e.getMessage());
-    } finally {
-        if (preparedStatement != null) try { preparedStatement.close(); } catch (SQLException ignore) {}
-        if (connection != null) try { connection.close(); } catch (SQLException ignore) {}
+        session.setAttribute("error_message", "An unexpected error occurred: " + e.getMessage());
+        response.sendRedirect("publisher.jsp");
     }
-%>
-<a href="<%= request.getContextPath() %>/views/publishers/publisher.jsp">Back to Publishers</a> 
+%> 

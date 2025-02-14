@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add New Publisher</title>
+    <title>Add Publisher</title>
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
 </head>
 <body>
@@ -14,16 +14,8 @@
             <h1>Add New Publisher</h1>
             <form id="addPublisherForm" action="<%= request.getContextPath() %>/views/publishers/process_addPublisher.jsp" method="POST">
                 <div class="form-group">
-                    <label for="publisherId">Publisher ID*</label>
-                    <input type="text" id="publisherId" name="publisher_id" required>
-                </div>
-                <div class="form-group">
-                    <label for="name">Name*</label>
+                    <label for="name">Publication Name*</label>
                     <input type="text" id="name" name="name" required>
-                </div>
-                <div class="form-group">
-                    <label for="address">Address*</label>
-                    <input type="text" id="address" name="address" required>
                 </div>
                 <div class="form-group">
                     <label for="phone">Phone*</label>

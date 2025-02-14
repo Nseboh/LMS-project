@@ -40,7 +40,7 @@
             <nav class="sidebar-nav">
                 <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/superadmin/superadminDashboard.jsp'">
                     <i class="fas fa-users"></i>
-                    <span>Staffs</span>
+                    <span>Staff</span>
                 </div>
                 <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/patron/patron.jsp'">
                     <i class="fas fa-users"></i>
@@ -141,45 +141,49 @@
                     <table id="publishersTable">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>NAME</th>
-                                <th>ADDRESS</th>
-                                <th>PHONE</th>
-                                <th>EMAIL</th>
-                                <th>WEBSITE</th>
-                                <th>CREATED AT</th>
-                                <th>ACTION</th>
+                                <th>Publication Name</th>
+                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>Website</th>
+                                <th>Created At</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <% 
-                                // Fetch publishers from the database
+                            <%
+                                Connection conn = null;
+                                PreparedStatement pstmt = null;
+                                ResultSet rs = null;
+
                                 try {
                                     Class.forName("com.mysql.cj.jdbc.Driver");
-                                    Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
-                                    Statement stmt = conn.createStatement();
-                                    ResultSet rs = stmt.executeQuery("SELECT * FROM publisher");
+                                    conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
+
+                                    // Fetch all publishers with their contact details
+                                    String sql = "SELECT p.publisher_id, p.Publication_name, p.created_at, " +
+                                                 "c.phone, c.email, c.website " +
+                                                 "FROM publisher p " +
+                                                 "LEFT JOIN publishercontact c ON p.publisher_id = c.publisher_id";
+                                    pstmt = conn.prepareStatement(sql);
+                                    rs = pstmt.executeQuery();
 
                                     if (!rs.isBeforeFirst()) {
                                         out.println("<tr><td colspan='8'>No publishers found.</td></tr>");
                                     } else {
                                         while (rs.next()) {
-                                            String publisherId = rs.getString("publisher_id");
-                                            String name = rs.getString("name");
-                                            String address = rs.getString("address");
+                                            int publisherId = rs.getInt("publisher_id");
+                                            String PublicationName = rs.getString("Publication_name");
+                                            Timestamp createdAt = rs.getTimestamp("created_at");
                                             String phone = rs.getString("phone");
                                             String email = rs.getString("email");
                                             String website = rs.getString("website");
-                                            Timestamp createdAt = rs.getTimestamp("created_at");
                             %>
                             <tr>
-                                <td><%= publisherId %></td>
-                                <td><%= name %></td>
-                                <td><%= address %></td>
-                                <td><%= phone %></td>
-                                <td><%= email %></td>
+                                <td><%= PublicationName %></td>
+                                <td><%= phone != null ? phone : "N/A" %></td>
+                                <td><%= email != null ? email : "N/A" %></td>
                                 <td><%= website != null ? website : "N/A" %></td>
-                                <td><%= createdAt != null ? createdAt.toLocalDateTime() : "N/A" %></td>
+                                <td><%= createdAt != null ? createdAt.toString() : "N/A" %></td>
                                 <td>
                                     <div class="actions">
                                         <div class="tooltip">
@@ -199,13 +203,19 @@
                                     </div>
                                 </td>
                             </tr>
-                            <% 
+                            <%
                                         }
                                     }
-                                    conn.close();
+                                } catch (SQLException sqlEx) {
+                                    sqlEx.printStackTrace();
+                                    out.println("<tr><td colspan='8'>Error fetching publishers: " + sqlEx.getMessage() + "</td></tr>");
                                 } catch (Exception e) {
                                     e.printStackTrace();
-                                    out.println("<tr><td colspan='8'>Error fetching publishers: " + e.getMessage() + "</td></tr>");
+                                    out.println("<tr><td colspan='8'>An unexpected error occurred: " + e.getMessage() + "</td></tr>");
+                                } finally {
+                                    if (rs != null) try { rs.close(); } catch (SQLException e) {}
+                                    if (pstmt != null) try { pstmt.close(); } catch (SQLException e) {}
+                                    if (conn != null) try { conn.close(); } catch (SQLException e) {}
                                 }
                             %>
                         </tbody>
@@ -227,9 +237,6 @@ function closeAlert() {
         alert.style.display = 'none';
     }
 }
-
-
-
 
 function editPublisher(id) {
     window.location.href = '<%= request.getContextPath() %>/views/publishers/editPublisher.jsp?id=' + id;

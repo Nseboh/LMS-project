@@ -7,226 +7,129 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add New Book</title>
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-        }
-        .navbar {
-            background-color: #007BFF;
-            padding: 10px;
-            color: white;
-            text-align: center;
-        }
-        .navbar a {
-            color: white;
-            margin: 0 15px;
-            text-decoration: none;
-        }
-        .form-container {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            max-width: 900px;
-            margin: auto;
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        .form-group {
-            margin-bottom: 15px;
-            display: flex;
-            flex-direction: column;
-        }
-        label {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        input, select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .status-group {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-        .buttons {
-            margin-top: 20px;
-            display: flex;
-            justify-content: space-between;
-        }
-        button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .cancel-btn {
-            background: #ccc;
-        }
-        .add-btn {
-            background: purple;
-            color: white;
-        }
-    </style>
 </head>
 <body>
+    <div class="modal-content">
+        <span class="close" onclick="closeAddBookModal()">&times;</span>
+        <div class="form-container">
+            <h1>Add New Book</h1>
+            <form id="addBookForm" action="process_addBook.jsp" method="POST">
+                <div class="form-group">
+                    <label for="isbn">ISBN/ISSN:</label>
+                    <input type="text" id="isbn" name="isbn" required placeholder="Enter ISBN/ISSN">
+                </div>
+                <div class="form-group">
+                    <label for="title">Title:</label>
+                    <input type="text" id="title" name="title" required placeholder="Enter Book Title">
+                </div>
+                <div class="form-group">
+                    <label for="author_id">Author:</label>
+                    <select id="author_id" name="author_id" required>
+                        <option value="">Select Author</option>
+                        <%
+                            // Fetch authors from the database
+                            String dbUrl = "jdbc:mysql://localhost:3306/lms";
+                            String dbUser = "root";
+                            String dbPassword = "Righteous050598$";
+                            Connection conn = null;
+                            Statement stmt = null;
+                            ResultSet rs = null;
 
-<div class="form-container">
-    <h1>Add New Book</h1>
-    <form id="addBookForm" action="<%= request.getContextPath() %>/views/books/process_addBook.jsp" method="POST">
-        <div class="form-group">
-            <label>Book Title *</label>
-            <input type="text" name="title" required placeholder="Book name here">
-        </div>
-        <div class="form-group">
-            <label>Author(s) *</label>
-            <select name="authorId" required>
-                <option value="">Select from list</option>
-                <%
-                    // Fetch authors from the database
-                    String dbURL = "jdbc:mysql://localhost:3306/lms";
-                    String dbUser = "root";
-                    String dbPassword = "Righteous050598$"; // Updated database password
+                            try {
+                                Class.forName("com.mysql.cj.jdbc.Driver");
+                                conn = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+                                stmt = conn.createStatement();
+                                rs = stmt.executeQuery("SELECT author_id, CONCAT(first_name, ' ', last_name) AS full_name FROM authors");
 
-                    Connection conn = null;
-                    Statement stmt = null;
-                    ResultSet rs = null;
+                                while (rs.next()) {
+                                    String authorId = rs.getString("author_id");
+                                    String fullName = rs.getString("full_name");
+                        %>
+                        <option value="<%= authorId %>"><%= fullName %></option>
+                        <%
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            } finally {
+                                try {
+                                    if (rs != null) rs.close();
+                                    if (stmt != null) stmt.close();
+                                    if (conn != null) conn.close();
+                                } catch (SQLException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        %>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="genre">Genre:</label>
+                    <input type="text" id="genre" name="genre" required placeholder="Enter Genre">
+                </div>
+                <div class="form-group">
+                    <label for="language">Language:</label>
+                    <input type="text" id="language" name="language" required placeholder="Enter Language">
+                </div>
+                <div class="form-group">
+                    <label for="publication_year">Publication Year:</label>
+                    <input type="number" id="publication_year" name="publication_year" required placeholder="Enter Publication Year" min="1900" max="2100">
+                </div>
+                <div class="form-group">
+                    <label for="total_copies">Total Copies:</label>
+                    <input type="number" id="total_copies" name="total_copies" required placeholder="Enter Total Copies" min="1">
+                </div>
+                <div class="form-group">
+                    <label for="available_copies">Available Copies:</label>
+                    <input type="number" id="available_copies" name="available_copies" required placeholder="Enter Available Copies" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="publisher_id">Publisher:</label>
+                    <select id="publisher_id" name="publisher_id" required>
+                        <option value="">Select Publisher</option>
+                        <%
+                            // Fetch publishers from the database
+                            try {
+                                conn = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+                                stmt = conn.createStatement();
+                                rs = stmt.executeQuery("SELECT publisher_id, Publication_name FROM publisher");
 
-                    try {
-                        Class.forName("com.mysql.cj.jdbc.Driver");
-                        conn = DriverManager.getConnection(dbURL, dbUser, dbPassword);
-                        stmt = conn.createStatement();
-                        String sql = "SELECT author_id, CONCAT(first_name, ' ', last_name) AS full_name FROM author";
-                        rs = stmt.executeQuery(sql);
-
-                        while (rs.next()) {
-                            String authorId = rs.getString("author_id");
-                            String fullName = rs.getString("full_name");
-                %>
-                <option value="<%= authorId %>"><%= fullName %></option>
-                <%
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    } finally {
-                        if (rs != null) try { rs.close(); } catch (SQLException ignore) {}
-                        if (stmt != null) try { stmt.close(); } catch (SQLException ignore) {}
-                        if (conn != null) try { conn.close(); } catch (SQLException ignore) {}
-                    }
-                %>
-            </select>
+                                while (rs.next()) {
+                                    String publisherId = rs.getString("publisher_id");
+                                    String publisherName = rs.getString("Publication_name");
+                        %>
+                        <option value="<%= publisherId %>"><%= publisherName %></option>
+                        <%
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            } finally {
+                                try {
+                                    if (rs != null) rs.close();
+                                    if (stmt != null) stmt.close();
+                                    if (conn != null) conn.close();
+                                } catch (SQLException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        %>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="submit-btn">Add Book</button>
+                    <button type="button" class="cancel-btn" onclick="closeAddBookModal()">Cancel</button>
+                </div>
+            </form>
         </div>
-        <div class="form-group">
-            <label>ISBN/ISSN *</label>
-            <input type="text" name="isbn" required placeholder="Enter ISBN/ISSN">
+    </div>
+    <% if (session.getAttribute("error_message") != null) { %>
+        <div class="alert alert-danger">
+            <p><%= session.getAttribute("error_message") %></p>
+            <button onclick="closeAlert()" class="close-alert">&times;</button>
         </div>
-        <div class="form-group">
-            <label>Genre/Category *</label>
-            <select name="genre" required>
-                <option value="">Choose a Category</option>
-                <option value="Fiction">Fiction</option>
-                <option value="Non-Fiction">Non-Fiction</option>
-                <option value="Science">Science</option>
-                <option value="Romance">Romance</option>
-                <option value="History">History</option>
-                <option value="Fantasy">Fantasy</option>
-                <option value="Biography">Biography</option>
-                <option value="Design">Design</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>Language *</label>
-            <select name="language" required>
-                <option value="">Select from list</option>
-                <option value="English">English</option>
-                <option value="Tamil">Tamil</option>
-                <option value="Hindi">Hindi</option>
-                <option value="Spanish">Spanish</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>Available Copies *</label>
-            <input type="number" name="availableCopies" required placeholder="Enter available copies">
-        </div>
-        <div class="form-group">
-            <label>Total Copies *</label>
-            <input type="number" name="totalCopies" required placeholder="Enter no of Copies">
-        </div>
-        <div class="form-group">
-            <label>Floor *</label>
-            <select name="floor" required>
-                <option value="">Select from list</option>
-                <!-- Add floor options as needed -->
-            </select>
-        </div>
-        <div class="form-group">
-            <label>Shelf/Location Code</label>
-            <input type="text" name="shelfLocation" placeholder="Enter shelf location code">
-        </div>
-        <div class="form-group">
-            <label>Total no of Pages *</label>
-            <input type="number" name="totalPages" required placeholder="10 to 10,000">
-        </div>
-        <div class="form-group">
-            <label>Status *</label>
-            <div class="status-group">
-                <label><input type="radio" name="status" value="Available" required> Available</label>
-                <label><input type="radio" name="status" value="Reserved"> Reserved</label>
-                <label><input type="radio" name="status" value="Out of Stock"> Out of Stock</label>
-            </div>
-        </div>
-        <div class="form-group">
-            <label>File Attachment</label>
-            <div class="file-upload">
-                <button type="button">Choose a file</button>
-            </div>
-        </div>
-        <h2>Features Information</h2>
-        <div class="form-group">
-            <label>Book Features *</label>
-            <select name="bookFeatures" required>
-                <option>Select from list</option>
-                <option value="Hardcover">Hardcover</option>
-                <option value="Paperback">Paperback</option>
-                <option value="E-book">E-book</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>Book Volume</label>
-            <select name="bookVolume">
-                <option>Select from list</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>Published Year</label>
-            <input type="text" name="publishedYear" placeholder="YYYY">
-        </div>
-        <div class="form-group">
-            <label>QR Code Generation</label>
-            <input type="text" name="qrCode" value="Random Generated QR" readonly>
-        </div>
-        <div class="form-group">
-            <label>Book Published Date</label>
-            <input type="date" name="bookPublishedDate">
-        </div>
-        <div class="form-group">
-            <label>Moral of the Book *</label>
-            <input type="text" name="moralOfTheBook" required placeholder="Book name here">
-        </div>
-        <div class="buttons">
-            <button type="button" class="cancel-btn" onclick="window.location.href='books.jsp'">Cancel</button>
-            <button type="submit" class="add-btn">Add Book</button>
-        </div>
-    </form>
-</div>
-
+        <%
+            // Clear the session attribute after displaying it
+            session.removeAttribute("error_message");
+        %>
+    <% } %>
 </body>
 </html>

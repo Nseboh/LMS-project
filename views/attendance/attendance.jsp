@@ -41,7 +41,7 @@
             <nav class="sidebar-nav">
                 <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/superadmin/superadminDashboard.jsp'">
                     <i class="fas fa-users"></i>
-                    <span>Staffs</span>
+                    <span>Staff</span>
                 </div>
                 <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/patron/patron.jsp'">
                     <i class="fas fa-users"></i>
@@ -142,7 +142,6 @@
                     <table id="attendanceTable">
                         <thead>
                             <tr>
-                                <th>ID</th>
                                 <th>PATRON NAME</th>
                                 <th>VISIT DATE</th>
                                 <th>TIME IN</th>
@@ -176,7 +175,6 @@
                                             String remarks = rs.getString("remarks");
                             %>
                             <tr>
-                                <td><%= attendanceId %></td>
                                 <td><%= patronName %></td>
                                 <td><%= visitDate %></td>
                                 <td><%= visitTimeIn %></td>

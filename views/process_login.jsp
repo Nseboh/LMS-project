@@ -10,32 +10,41 @@
     String dbPassword = "Righteous050598$";
     
     try {
-        Class.forName("com.mysql.jdbc.Driver");
+        Class.forName("com.mysql.cj.jdbc.Driver");
         Connection conn = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
         
-        String sql = "SELECT * FROM staff WHERE email = ? AND password = ?";
-        PreparedStatement pstmt = conn.prepareStatement(sql); // Using PreparedStatement to prevent SQL injection
-        pstmt.setString(1, email); // Setting the email parameter in the query
-        pstmt.setString(2, password); // Setting the password parameter in the query
+        // Use a prepared statement to prevent SQL injection
+        String sql = "SELECT s.staff_id, sr.role_name, ss.status " +
+                     "FROM staff s " +
+                     "JOIN staff_contact sc ON s.staff_id = sc.staff_id " +
+                     "JOIN staffrole sr ON s.staff_id = sr.staff_id " +
+                     "JOIN staff_status ss ON s.staff_id = ss.staff_id " +
+                     "WHERE sc.email = ? AND s.password = ?";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setString(1, email);
+        pstmt.setString(2, password);
         
         ResultSet rs = pstmt.executeQuery();
         
         // Checking if a staff with the provided credentials exists
         if (rs.next()) {
-            String role = rs.getString("role");
+            String staffId = rs.getString("staff_id");
+            String role = rs.getString("role_name");
             String status = rs.getString("status");
-            session.setAttribute("staff_id", rs.getString("staff_id"));
-            session.setAttribute("staff_email", email);
-            session.setAttribute("staff_role", role);
-            session.setAttribute("staff_status", status);
+
+            // Set session attributes
+            session.setAttribute("staff_id", staffId);
+            session.setAttribute("email", email);
+            session.setAttribute("role_name", role);
+            session.setAttribute("status", status);
             
             // Redirecting users based on their role and status
             if ("Superadmin".equals(role) && "active".equals(status)) {
                 response.sendRedirect("superadmin/superadminDashboard.jsp");
-            } else if ("Admin".equals(role)) {
+            } else if ("Admin".equals(role) && "active".equals(status)) {
                 response.sendRedirect("admin/patron/patron.jsp");
             } else {
-                response.sendRedirect("login.jsp?error=Invalid role");
+                response.sendRedirect("login.jsp?error=Invalid role or status");
             }
         } else {
             response.sendRedirect("login.jsp?error=Invalid credentials");
@@ -46,8 +55,13 @@
         pstmt.close();
         conn.close();
         
+    } catch (SQLException sqlEx) {
+        sqlEx.printStackTrace(); // Print the SQL exception stack trace
+        session.setAttribute("error_message", "SQL Error: " + sqlEx.getMessage());
+        response.sendRedirect("login.jsp?error=SQL Error: " + sqlEx.getMessage());
     } catch (Exception e) {
-        e.printStackTrace();
-        response.sendRedirect("login.jsp?error=Database error");
+        e.printStackTrace(); // Print the general exception stack trace
+        session.setAttribute("error_message", "Error: " + e.getMessage());
+        response.sendRedirect("login.jsp?error=Error: " + e.getMessage());
     }
 %> 
