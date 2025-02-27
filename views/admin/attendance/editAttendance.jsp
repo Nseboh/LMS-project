@@ -56,7 +56,7 @@
                 session.removeAttribute("error_message");
             %>
         <% } %>
-        <form id="editAttendanceForm" action="<%= request.getContextPath() %>/views/admin/attendance/process_editAttendance.jsp" method="POST">
+        <form id="editAttendanceForm" action="<%= request.getContextPath() %>/views/attendance/process_editAttendance.jsp" method="POST">
             <input type="hidden" name="attendanceId" value="<%= attendanceId %>">
             <div class="form-group">
                 <label for="visitDate">Visit Date*</label>
@@ -76,7 +76,7 @@
             </div>
             <div class="form-actions">
                 <button type="submit" class="submit-btn">Save</button>
-                <button type="button" class="cancel-btn" onclick="window.location.href='<%= request.getContextPath() %>/views/admin/attendance/attendance.jsp'">Cancel</button>
+                <button type="button" class="cancel-btn" onclick="window.location.href='<%= request.getContextPath() %>/views/attendance/attendance.jsp'">Cancel</button>
             </div>
         </form>
     </div>

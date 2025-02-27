@@ -22,16 +22,12 @@
         String role = request.getParameter("role");
         String status = request.getParameter("status");
 
-        // Debugging output
-        System.out.println("Staff ID: " + staffId);
-        System.out.println("First Name: " + firstName);
-        System.out.println("Last Name: " + lastName);
-        System.out.println("Gender: " + gender);
-        System.out.println("Contact: " + contact);
-        System.out.println("Address: " + address);
-        System.out.println("Email: " + email);
-        System.out.println("Role: " + role);
-        System.out.println("Status: " + status);
+        // Validate staff ID format
+        if (!staffId.matches("^STF-\\d{7}$")) {
+            session.setAttribute("error_message", "Staff ID must be in the format STF-XXXXXXX, where X is a digit.");
+            response.sendRedirect("addStaff.jsp");
+            return;
+        }
 
         // Generate password
         String password = generatePassword();

@@ -2,42 +2,47 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%
-    String idParam = request.getParameter("id");
-    if (idParam == null || idParam.isEmpty()) {
-        session.setAttribute("error_message", "Invalid patron ID.");
-        response.sendRedirect("patron.jsp");
-        return;
-    }
+    String patronId = request.getParameter("id");
 
-    String patronId = idParam; // No need to parse as int since patron_id is now varchar
-
-    String dbURL = "jdbc:mysql://localhost:3306/lms";
-    String dbUser = "root";
-    String dbPassword = "Righteous050598$"; // Updated database password
-
-    Connection connection = null;
-    PreparedStatement preparedStatement = null;
+    Connection conn = null;
+    PreparedStatement pstmt = null;
 
     try {
         Class.forName("com.mysql.cj.jdbc.Driver");
-        connection = DriverManager.getConnection(dbURL, dbUser, dbPassword);
+        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
 
-        String sql = "DELETE FROM patron WHERE patron_id = ?";
-        preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setString(1, patronId); // Set patronId as a string
+        // Delete patron from patronmembership table
+        String sqlMembership = "DELETE FROM patronmembership WHERE patron_id = ?";
+        pstmt = conn.prepareStatement(sqlMembership);
+        pstmt.setString(1, patronId);
+        pstmt.executeUpdate();
 
-        int rowsAffected = preparedStatement.executeUpdate();
-        if (rowsAffected > 0) {
-            session.setAttribute("success_message", "Patron deleted successfully.");
-        } else {
-            session.setAttribute("error_message", "Error deleting patron.");
-        }
+        // Delete patron from patroncontact table
+        String sqlContact = "DELETE FROM patroncontact WHERE patron_id = ?";
+        pstmt = conn.prepareStatement(sqlContact);
+        pstmt.setString(1, patronId);
+        pstmt.executeUpdate();
+
+        // Delete patron from patron table
+        String sqlPatron = "DELETE FROM patron WHERE patron_id = ?";
+        pstmt = conn.prepareStatement(sqlPatron);
+        pstmt.setString(1, patronId);
+        pstmt.executeUpdate();
+
+        // Redirect to the patron list with success message
+        session.setAttribute("success_message", "Patron deleted successfully!");
+        response.sendRedirect("patron.jsp");
+
+    } catch (SQLException sqlEx) {
+        sqlEx.printStackTrace();
+        session.setAttribute("error_message", "SQL Error: " + sqlEx.getMessage());
+        response.sendRedirect("patron.jsp");
     } catch (Exception e) {
         e.printStackTrace();
-        session.setAttribute("error_message", "Error: " + e.getMessage());
+        session.setAttribute("error_message", "An unexpected error occurred.");
+        response.sendRedirect("patron.jsp");
     } finally {
-        if (preparedStatement != null) try { preparedStatement.close(); } catch (SQLException ignore) {}
-        if (connection != null) try { connection.close(); } catch (SQLException ignore) {}
+        if (pstmt != null) try { pstmt.close(); } catch (SQLException e) {}
+        if (conn != null) try { conn.close(); } catch (SQLException e) {}
     }
-%>
-<a href="<%= request.getContextPath() %>/views/admin/patron/patron.jsp">Back to Patrons</a> 
+%> 

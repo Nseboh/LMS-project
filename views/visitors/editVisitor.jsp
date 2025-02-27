@@ -9,20 +9,27 @@
     String email = "";
     String gender = "";
     String status = "";
+    String timeIn = "";
     String timeOut = "";
+    String remarks = "";
 
     Connection conn = null;
     PreparedStatement pstmt = null;
+    ResultSet rs = null;
 
     try {
         Class.forName("com.mysql.cj.jdbc.Driver");
         conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
 
         // Fetch visitor details
-        String sql = "SELECT * FROM visitor WHERE visitor_id = ?";
+        String sql = "SELECT v.first_name, v.last_name, v.contact_number, v.email, v.gender, vv.time_in, vv.time_out, vs.status, vs.remarks " +
+                     "FROM visitor v " +
+                     "LEFT JOIN visitorvisit vv ON v.visitor_id = vv.visitor_id " +
+                     "LEFT JOIN visitstatus vs ON v.visitor_id = vs.visitor_id " +
+                     "WHERE v.visitor_id = ?";
         pstmt = conn.prepareStatement(sql);
         pstmt.setString(1, visitorId);
-        ResultSet rs = pstmt.executeQuery();
+        rs = pstmt.executeQuery();
 
         if (rs.next()) {
             firstName = rs.getString("first_name");
@@ -30,12 +37,17 @@
             contactNumber = rs.getString("contact_number");
             email = rs.getString("email");
             gender = rs.getString("gender");
+            timeIn = rs.getTime("time_in") != null ? rs.getTime("time_in").toString() : "";
+            timeOut = rs.getTime("time_out") != null ? rs.getTime("time_out").toString() : "";
             status = rs.getString("status");
-            timeOut = rs.getTime("time_out") != null ? rs.getTime("time_out").toString() : ""; // Handle null for time_out
+            remarks = rs.getString("remarks");
         }
-        conn.close();
     } catch (Exception e) {
         e.printStackTrace();
+    } finally {
+        if (rs != null) try { rs.close(); } catch (SQLException e) {}
+        if (pstmt != null) try { pstmt.close(); } catch (SQLException e) {}
+        if (conn != null) try { conn.close(); } catch (SQLException e) {}
     }
 %>
 <!DOCTYPE html>
@@ -46,7 +58,6 @@
     <title>Edit Visitor</title>
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/superadmin.css">
-
 </head>
 <body>
     <div class="modal-content">
@@ -62,18 +73,18 @@
             %>
         <% } %>
         <form id="editVisitorForm" action="<%= request.getContextPath() %>/views/visitors/process_editVisitor.jsp" method="POST">
-            <input type="hidden" name="visitorId" value="<%= visitorId %>">
+            <input type="hidden" name="visitor_id" value="<%= visitorId %>">
             <div class="form-group">
                 <label for="firstName">First Name*</label>
-                <input type="text" id="firstName" name="firstName" value="<%= firstName %>" required>
+                <input type="text" id="firstName" name="first_name" value="<%= firstName %>" required>
             </div>
             <div class="form-group">
                 <label for="lastName">Last Name*</label>
-                <input type="text" id="lastName" name="lastName" value="<%= lastName %>" required>
+                <input type="text" id="lastName" name="last_name" value="<%= lastName %>" required>
             </div>
             <div class="form-group">
                 <label for="contactNumber">Contact*</label>
-                <input type="tel" id="contactNumber" name="contactNumber" value="<%= contactNumber %>" required>
+                <input type="tel" id="contactNumber" name="contact_number" value="<%= contactNumber %>" required>
             </div>
             <div class="form-group">
                 <label for="email">Email*</label>
@@ -88,8 +99,12 @@
                 </select>
             </div>
             <div class="form-group">
-                <label for="timeOut">Time Out (when leaving the library)</label>
-                <input type="time" id="timeOut" name="timeOut" value="<%= timeOut %>">
+                <label for="timeIn">Time In</label>
+                <input type="time" id="timeIn" name="time_in" value="<%= timeIn %>">
+            </div>
+            <div class="form-group">
+                <label for="timeOut">Time Out</label>
+                <input type="time" id="timeOut" name="time_out" value="<%= timeOut %>">
             </div>
             <div class="form-group">
                 <label for="status">Status*</label>
@@ -100,12 +115,15 @@
                     <option value="Completed" <%= status.equals("Completed") ? "selected" : "" %>>Completed</option>
                 </select>
             </div>
+            <div class="form-group">
+                <label for="remarks">Remarks</label>
+                <textarea id="remarks" name="remarks" rows="4"><%= remarks %></textarea>
+            </div>
             <div class="form-actions">
                 <button type="submit" class="submit-btn">Update Visitor</button>
                 <button type="button" class="cancel-btn" onclick="window.location.href='<%= request.getContextPath() %>/views/visitors/visitor.jsp'">Cancel</button>
             </div>
         </form>
     </div>
-    
 </body>
-</html> 
+</html>

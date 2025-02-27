@@ -12,7 +12,7 @@
         <span class="close" onclick="closeAddPatronModal()">&times;</span>
         <div class="form-container">
             <h1>Add New Patron</h1>
-            <form id="addPatronForm" action="<%= request.getContextPath() %>/views/admin/patron/process_addPatron.jsp" method="POST">
+            <form id="addUserForm" action="<%= request.getContextPath() %>/views/patron/process_addPatron.jsp" method="POST">
                 <div class="form-group">
                     <label for="patronId">Patron ID*</label>
                     <input type="text" id="patronId" name="patronId" required>
@@ -26,20 +26,27 @@
                     <input type="text" id="lastName" name="lastName" required>
                 </div>
                 <div class="form-group">
+                    <label for="age">Age*</label>
+                    <input type="text" id="age" name="age" required>
+                </div>
+                <div class="form-group">
+                    <label for="gender">Gender*</label>
+                    <select id="gender" name="gender" required>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label for="address">Address*</label>
                     <input type="text" id="address" name="address" required>
                 </div>
                 <div class="form-group">
+                    <label for="phone">Phone*</label>
+                    <input type="tel" id="phone" name="phone" pattern="[0-9]{10}" required>
+                </div>
+                <div class="form-group">
                     <label for="email">Email*</label>
                     <input type="email" id="email" name="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="age">Age</label>
-                    <input type="number" id="age" name="age">
-                </div>
-                <div class="form-group">
-                    <label for="contact">Contact*</label>
-                    <input type="tel" id="contact" name="contact" pattern="[0-9]{10}" required>
                 </div>
                 <div class="form-group">
                     <label for="emergencyContact">Emergency Contact*</label>
@@ -48,25 +55,17 @@
                 <div class="form-group">
                     <label for="membershipType">Membership Type*</label>
                     <select id="membershipType" name="membershipType" required>
-                        <option value="">Select Type</option>
                         <option value="Standard">Standard</option>
                         <option value="Premium">Premium</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="gender">Gender*</label>
-                    <select id="gender" name="gender" required>
-                        <option value="">Select Gender</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
+                        <option value="VIP">VIP</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="status">Status*</label>
                     <select id="status" name="status" required>
-                        <option value="">Select Status</option>
                         <option value="Active">Active</option>
-                        <option value="Inactive">Inactive</option>
+                        <option value="Expired">Expired</option>
+                        <option value="Canceled">Canceled</option>
                     </select>
                 </div>
                 <div class="form-actions">

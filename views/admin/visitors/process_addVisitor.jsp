@@ -2,67 +2,121 @@
 <%@ page import="java.time.*" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
-    String fullName = request.getParameter("fullName");
+    String visitorId = request.getParameter("visitorId");
+    String firstName = request.getParameter("firstName");
+    String lastName = request.getParameter("lastName");
     String contactNumber = request.getParameter("contactNumber");
     String email = request.getParameter("email");
     String gender = request.getParameter("gender");
-    String timeOut = request.getParameter("timeOut");
+    String timeOut = request.getParameter("timeOut"); // This can be null
+    String timeIn = new java.sql.Time(System.currentTimeMillis()).toString(); // Automatically set current time as Time In
     String status = request.getParameter("status");
+    String remarks = request.getParameter("remarks"); // New remarks field
 
-    // Debugging: Print the values to check if they are received correctly
-    System.out.println("Full Name: " + fullName);
-    System.out.println("Contact Number: " + contactNumber);
-    System.out.println("Email: " + email);
-    System.out.println("Gender: " + gender);
-    System.out.println("Time Out: " + timeOut);
-    System.out.println("Status: " + status);
-
-    // Check for null values
-    if (fullName == null || contactNumber == null || email == null || gender == null || timeOut == null || status == null) {
-        session.setAttribute("error_message", "All fields are required.");
-        response.sendRedirect("addVisitor.jsp");
-        return; // Exit if any required field is null
-    }
-
-    // Get current date for Visit Date and current time for Time In
-    LocalDate visitDate = LocalDate.now();
-    LocalTime timeIn = LocalTime.now();
+    Connection conn = null;
+    PreparedStatement pstmtVisitor = null;
+    PreparedStatement pstmtVisit = null;
 
     try {
-        Class.forName("com.mysql.jdbc.Driver");
-        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
-        
-        // Insert visitor data
-        String sql = "INSERT INTO visitor (full_name, contact_number, email, gender, visit_date, time_in, time_out, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        
-        PreparedStatement pstmt = conn.prepareStatement(sql);
-        pstmt.setString(1, fullName);
-        pstmt.setString(2, contactNumber);
-        pstmt.setString(3, email);
-        pstmt.setString(4, gender);
-        pstmt.setDate(5, java.sql.Date.valueOf(visitDate)); // Automatically set Visit Date
-        pstmt.setTime(6, java.sql.Time.valueOf(timeIn)); // Automatically set Time In
-        
-        // Handle Time Out
-        if (timeOut != null && !timeOut.isEmpty()) {
-            pstmt.setTime(7, java.sql.Time.valueOf(timeOut)); // Manually input Time Out
-        } else {
-            pstmt.setNull(7, java.sql.Types.TIME); // Set Time Out to null if not provided
-        }
-        
-        pstmt.setString(8, status);
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
 
-        int rowsInserted = pstmt.executeUpdate();
-        if (rowsInserted > 0) {
-            session.setAttribute("success_message", "Visitor added successfully!");
+        // Check if the visitor already exists
+        String sqlCheckVisitor = "SELECT COUNT(*) FROM visitor WHERE visitor_id = ?";
+        pstmtVisitor = conn.prepareStatement(sqlCheckVisitor);
+        pstmtVisitor.setString(1, visitorId);
+        ResultSet rsCheck = pstmtVisitor.executeQuery();
+        boolean visitorExists = false;
+        if (rsCheck.next() && rsCheck.getInt(1) > 0) {
+            visitorExists = true;
+        }
+
+        if (visitorExists) {
+            // Insert visit details
+            String sqlVisit = "INSERT INTO visitorvisit (visitor_id, visit_date, time_in, time_out) VALUES (?, CURDATE(), ?, ?)";
+            pstmtVisit = conn.prepareStatement(sqlVisit, Statement.RETURN_GENERATED_KEYS);
+            pstmtVisit.setString(1, visitorId);
+            pstmtVisit.setString(2, timeIn);
+            if (timeOut != null && !timeOut.isEmpty()) {
+                pstmtVisit.setString(3, timeOut); // Manually input Time Out
+            } else {
+                pstmtVisit.setNull(3, java.sql.Types.TIME); // Set Time Out to null if not provided
+            }
+            pstmtVisit.executeUpdate();
+
+            // Get the last inserted visit ID
+            ResultSet generatedKeys = pstmtVisit.getGeneratedKeys();
+            int lastVisitId = 0;
+            if (generatedKeys.next()) {
+                lastVisitId = generatedKeys.getInt(1);
+            }
+
+            // Insert status
+            String sqlStatus = "INSERT INTO visitstatus (visitor_id, status, remarks) VALUES (?, ?, ?)";
+            PreparedStatement pstmtStatus = conn.prepareStatement(sqlStatus);
+            pstmtStatus.setString(1, visitorId); // Use the visitor ID
+            pstmtStatus.setString(2, status);
+            pstmtStatus.setString(3, remarks);
+            pstmtStatus.executeUpdate();
+
+            // Redirect to the visitor list with success message
+            session.setAttribute("success_message", "Visitor visit recorded successfully!");
             response.sendRedirect("visitor.jsp");
         } else {
-            session.setAttribute("error_message", "Failed to add visitor.");
-            response.sendRedirect("addVisitor.jsp");
+            // If the visitor does not exist, insert their details
+            String sqlVisitor = "INSERT INTO visitor (visitor_id, first_name, last_name, contact_number, email, gender, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())";
+            pstmtVisitor = conn.prepareStatement(sqlVisitor);
+            pstmtVisitor.setString(1, visitorId);
+            pstmtVisitor.setString(2, firstName);
+            pstmtVisitor.setString(3, lastName);
+            pstmtVisitor.setString(4, contactNumber);
+            pstmtVisitor.setString(5, email);
+            pstmtVisitor.setString(6, gender);
+            pstmtVisitor.executeUpdate();
+
+            // Insert visit details
+            String sqlVisit = "INSERT INTO visitorvisit (visitor_id, visit_date, time_in, time_out) VALUES (?, CURDATE(), ?, ?)";
+            pstmtVisit = conn.prepareStatement(sqlVisit, Statement.RETURN_GENERATED_KEYS);
+            pstmtVisit.setString(1, visitorId);
+            pstmtVisit.setString(2, timeIn);
+            if (timeOut != null && !timeOut.isEmpty()) {
+                pstmtVisit.setString(3, timeOut); // Manually input Time Out
+            } else {
+                pstmtVisit.setNull(3, java.sql.Types.TIME); // Set Time Out to null if not provided
+            }
+            pstmtVisit.executeUpdate();
+
+            // Get the last inserted visit ID
+            ResultSet generatedKeys = pstmtVisit.getGeneratedKeys();
+            int lastVisitId = 0;
+            if (generatedKeys.next()) {
+                lastVisitId = generatedKeys.getInt(1);
+            }
+
+            // Insert status
+            String sqlStatus = "INSERT INTO visitstatus (visitor_id, status, remarks) VALUES (?, ?, ?)";
+            PreparedStatement pstmtStatus = conn.prepareStatement(sqlStatus);
+            pstmtStatus.setString(1, visitorId); // Use the visitor ID
+            pstmtStatus.setString(2, status);
+            pstmtStatus.setString(3, remarks);
+            pstmtStatus.executeUpdate();
+
+            // Redirect to the visitor list with success message
+            session.setAttribute("success_message", "Visitor added successfully!");
+            response.sendRedirect("visitor.jsp");
         }
+
+    } catch (SQLException sqlEx) {
+        sqlEx.printStackTrace();
+        session.setAttribute("error_message", "SQL Error: " + sqlEx.getMessage());
+        response.sendRedirect("addVisitor.jsp");
     } catch (Exception e) {
         e.printStackTrace();
-        session.setAttribute("error_message", "Error adding visitor: " + e.getMessage());
+        session.setAttribute("error_message", "An unexpected error occurred.");
         response.sendRedirect("addVisitor.jsp");
+    } finally {
+        if (pstmtVisitor != null) try { pstmtVisitor.close(); } catch (SQLException e) {}
+        if (pstmtVisit != null) try { pstmtVisit.close(); } catch (SQLException e) {}
+        if (conn != null) try { conn.close(); } catch (SQLException e) {}
     }
 %> 

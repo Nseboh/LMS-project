@@ -1,23 +1,19 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*" %>
-<%@ page import="java.time.*" %>
-<%@ page import="java.time.temporal.ChronoUnit" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JE.Library - Books</title>
+    <title>JE.Library - Authors</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/superadmin.css">
-
-    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <script>
-        function openAddBookModal() {
-            const modal = document.getElementById('addBookModal');
+        function openAddAuthorModal() {
+            const modal = document.getElementById('addAuthorModal');
             const modalContent = document.getElementById('modalContent');
-            fetch('<%= request.getContextPath() %>/views/books/addBooks.jsp')
+            fetch('<%= request.getContextPath() %>/views/authors/addAuthor.jsp')
                 .then(response => response.text())
                 .then(data => {
                     modalContent.innerHTML = data;
@@ -25,18 +21,8 @@
                 });
         }
 
-        function closeAddBookModal() {
-            document.getElementById('addBookModal').style.display = 'none';
-        }
-
-        function editBook(isbn) {
-            window.location.href = '<%= request.getContextPath() %>/views/books/editBook.jsp?isbn=' + isbn;
-        }
-
-        function deleteBook(isbn) {
-            if (confirm("Are you sure you want to delete this book?")) {
-                window.location.href = '<%= request.getContextPath() %>/views/books/deleteBook.jsp?isbn=' + isbn;
-            }
+        function closeAddAuthorModal() {
+            document.getElementById('addAuthorModal').style.display = 'none';
         }
     </script>
 </head>
@@ -60,11 +46,11 @@
                     <i class="fas fa-users"></i>
                     <span>Patrons</span>
                 </div>
-                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/authors/author.jsp'">
+                <div class="nav-item active">
                     <i class="fas fa-pen-fancy"></i>
                     <span>Authors</span>
                 </div>
-                <div class="nav-item active">
+                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/books/books.jsp'">
                     <i class="fas fa-book"></i>
                     <span>Books</span>
                 </div>
@@ -100,115 +86,95 @@
         <!-- Main Content -->
         <main class="main-content">
             <header class="header">
-                <h1>Books</h1>
+                <h1>Authors</h1>
             </header>
-
-           
 
             <!-- Stats Cards -->
             <div class="stats-cards">
                 <div class="stat-card">
                     <div class="stat-header">
-                        <i class="fas fa-book"></i>
-                        <h3>Total Books</h3>
+                        <i class="fas fa-pen-fancy"></i>
+                        <h3>Registered Authors</h3>
                     </div>
                     <p class="stat-number">
                         <%
-                            int totalBooks = 0;
+                            // Fetch total registered authors
+                            int totalAuthors = 0;
                             try {
                                 Class.forName("com.mysql.cj.jdbc.Driver");
                                 Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
                                 Statement stmt = conn.createStatement();
-                                ResultSet rs = stmt.executeQuery("SELECT COUNT(*) AS total FROM books");
+                                ResultSet rs = stmt.executeQuery("SELECT COUNT(*) AS total FROM authors");
                                 if (rs.next()) {
-                                    totalBooks = rs.getInt("total");
+                                    totalAuthors = rs.getInt("total");
                                 }
-                                rs.close();
-                                stmt.close();
                                 conn.close();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                            out.print(totalBooks);
+                            out.print(totalAuthors);
                         %>
                     </p>
                 </div>
-                
             </div>
 
-            <!-- Users Table Section -->
+            <!-- Authors Table Section -->
             <div class="clients-table">
                 <div class="table-header-container">
                     <div class="table-title">
-                        <h2>Books Table</h2>
+                        <h2>Authors Table</h2>
                     </div>
                     <div class="search-container">
-                        <input type="search" id="searchInput" placeholder="Type to search" class="search-input" />
-                        <button class="search-btn" onclick="searchTable()">Search</button>
+                        <input type="search" id="searchInput" placeholder="Search Authors" class="search-input" />
+                        <button class="search-btn" onclick="searchAuthors()">Search</button>
                         <button class="back-btn" onclick="resetTable()">Back</button>
                     </div>
                     <div class="add-new-container">
-                        <button onclick="openAddBookModal()" class="add-new">Add New</button>
+                        <button onclick="openAddAuthorModal()" class="add-new">Add New</button>
                     </div>
                 </div>
                 <div class="table-wrapper">
-                    <table id="booksTable">
+                    <table id="authorsTable">
                         <thead>
                             <tr>
-                                <th>ISBN/ISSN</th>
-                                <th>Title</th>
                                 <th>Author ID</th>
-                                <th>Genre</th>
-                                <th>Copies Available</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                                <th>Name</th>
+                                <th>Created At</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <%
+                            <% 
+                                // Fetch authors from the database
                                 try {
                                     Class.forName("com.mysql.cj.jdbc.Driver");
                                     Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
                                     Statement stmt = conn.createStatement();
-                                    ResultSet rs = stmt.executeQuery("SELECT b.isbn, b.title, b.author_id, b.genre, b.language, b.publication_year, b.total_copies, " +
-                                                                      "bc.copies_available, bc.status, p.Publication_name AS Publication_name " +
-                                                                      "FROM books b " +
-                                                                      "LEFT JOIN bookcopy bc ON b.isbn = bc.isbn " +
-                                                                      "LEFT JOIN publisher p ON b.publisher_id = p.publisher_id");
+                                    ResultSet rs = stmt.executeQuery("SELECT * FROM authors");
 
                                     if (!rs.isBeforeFirst()) {
-                                        out.println("<tr><td colspan='11'>No books found.</td></tr>");
+                                        out.println("<tr><td colspan='8'>No authors found.</td></tr>");
                                     } else {
                                         while (rs.next()) {
-                                            String isbn = rs.getString("isbn");
-                                            String title = rs.getString("title");
                                             String authorId = rs.getString("author_id");
-                                            String genre = rs.getString("genre");
-                                            String language = rs.getString("language");
-                                            int publicationYear = rs.getInt("publication_year");
-                                            int totalCopies = rs.getInt("total_copies");
-                                            int copiesAvailable = rs.getInt("copies_available");
-                                            String status = rs.getString("status");
-                                            String publisherName = rs.getString("Publication_name");
+                                            String fullName = rs.getString("first_name") + " " + rs.getString("last_name");
+                                            String biography = rs.getString("biography");
                             %>
                             <tr>
-                                <td><%= isbn %></td>
-                                <td><a href="<%= request.getContextPath() %>/views/books/viewBook.jsp?isbn=<%= isbn %>"><%= title %></a></td>
-                                <td><a href="<%= request.getContextPath() %>/views/books/aboutAuthor.jsp?id=<%= authorId %>"><%= authorId %></a></td>
-                                <td><%= genre %></td>
-                                <td><%= copiesAvailable %></td>
-                                <td><%= status %></td>
+                                <td><%= authorId %></td>
+                                <td><a href="biography.jsp?author_id=<%= authorId %>"><%= fullName %></a></td>
+                                <td><%= rs.getDate("created_at") %></td>
                                 <td>
                                     <div class="actions">
                                         <div class="tooltip">
-                                            <button class="action-btn edit-btn" onclick="editBook('<%= isbn %>')">
+                                            <button class="action-btn edit-btn" onclick="editAuthor('<%= authorId %>')">
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                             <span class="tooltiptext">Edit</span>
                                         </div>
                                         
                                         <div class="tooltip">
-                                            <button class="action-btn delete-btn" onclick="deleteBook('<%= isbn %>')">
+                                            <button class="action-btn delete-btn" onclick="deleteAuthor('<%= authorId %>')">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
                                             <span class="tooltiptext">Delete</span>
@@ -217,15 +183,13 @@
                                     </div>
                                 </td>
                             </tr>
-                            <%
+                            <% 
                                         }
                                     }
-                                    rs.close();
-                                    stmt.close();
                                     conn.close();
                                 } catch (Exception e) {
                                     e.printStackTrace();
-                                    out.println("<tr><td colspan='11'>Error fetching books: " + e.getMessage() + "</td></tr>");
+                                    out.println("<tr><td colspan='8'>Error fetching authors: " + e.getMessage() + "</td></tr>");
                                 }
                             %>
                         </tbody>
@@ -235,9 +199,17 @@
         </main>
     </div>
 
-    <!-- Modal for Adding book -->
-    <div id="addBookModal" class="modal" style="display:none;">
+    <!-- Modal for Adding Author -->
+    <div id="addAuthorModal" class="modal" style="display:none;">
         <div id="modalContent"></div>
+    </div>
+
+    <!-- Modal for Author Biography -->
+    <div id="biographyModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeBiographyModal()">&times;</span>
+            <div id="modalContent"></div>
+        </div>
     </div>
 
 <script>
@@ -248,20 +220,19 @@ function closeAlert() {
     }
 }
 
-
-function editPatron(id) {
-    window.location.href = '<%= request.getContextPath() %>/views/books/editBook.jsp?isbn=' + isbn;
+function editAuthor(id) {
+    window.location.href = '<%= request.getContextPath() %>/views/authors/editAuthor.jsp?id=' + id;
 }
 
-function deletePatron(id) {
-    if (confirm("Are you sure you want to delete this book?")) {
-        window.location.href = '<%= request.getContextPath() %>/views/books/deleteBook.jsp?isbn=' + isbn;
+function deleteAuthor(id) {
+    if (confirm("Are you sure you want to delete this author?")) {
+        window.location.href = '<%= request.getContextPath() %>/views/authors/deleteAuthor.jsp?id=' + id;
     }
 }
 
-function searchTable() {
+function searchAuthors() {
     const input = document.getElementById('searchInput').value.toLowerCase();
-    const table = document.getElementById('bookTable');
+    const table = document.getElementById('authorsTable');
     const tr = table.getElementsByTagName('tr');
 
     for (let i = 1; i < tr.length; i++) {
@@ -279,12 +250,27 @@ function searchTable() {
 }
 
 function resetTable() {
-    const table = document.getElementById('bookTable');
+    const table = document.getElementById('authorsTable');
     const tr = table.getElementsByTagName('tr');
     for (let i = 1; i < tr.length; i++) {
         tr[i].style.display = '';
     }
     document.getElementById('searchInput').value = '';
+}
+
+function fetchBiography(authorId) {
+    fetch('biography.jsp?author_id=' + authorId)
+        .then(response => response.text())
+        .then(data => {
+            // Assuming the biography.jsp returns the full HTML content
+            document.getElementById('modalContent').innerHTML = data;
+            document.getElementById('biographyModal').style.display = 'block';
+        })
+        .catch(error => console.error('Error fetching biography:', error));
+}
+
+function closeBiographyModal() {
+    document.getElementById('biographyModal').style.display = 'none';
 }
 </script>
 </body>

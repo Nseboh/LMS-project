@@ -9,11 +9,12 @@
     <title>JE.Library - Attendance</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/superadmin.css">
     <script>
-        function openAddUserModal() {
-            const modal = document.getElementById('addUserModal');
+        function openAddAttendanceModal() {
+            const modal = document.getElementById('addAttendanceModal');
             const modalContent = document.getElementById('modalContent');
-            fetch('<%= request.getContextPath() %>/views/admin/attendance/addAttendance.jsp')
+            fetch('<%= request.getContextPath() %>/views/attendance/addAttendance.jsp')
                 .then(response => response.text())
                 .then(data => {
                     modalContent.innerHTML = data;
@@ -21,8 +22,8 @@
                 });
         }
 
-        function closeAddUserModal() {
-            document.getElementById('addUserModal').style.display = 'none';
+        function closeAddAttendanceModal() {
+            document.getElementById('addAttendanceModal').style.display = 'none';
         }
     </script>
 </head>
@@ -38,23 +39,27 @@
             </div>
             <div class="sidebar-divider"></div>
             <nav class="sidebar-nav">
-                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/admin/patron/patron.jsp'">
+                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/superadmin/superadminDashboard.jsp'">
+                    <i class="fas fa-users"></i>
+                    <span>Staff</span>
+                </div>
+                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/patron/patron.jsp'">
                     <i class="fas fa-users"></i>
                     <span>Patrons</span>
                 </div>
-                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/admin/authors/authors.jsp'">
+                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/authors/author.jsp'">
                     <i class="fas fa-pen-fancy"></i>
                     <span>Authors</span>
                 </div>
-                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/admin/books/books.jsp'">
+                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/books/books.jsp'">
                     <i class="fas fa-book"></i>
                     <span>Books</span>
                 </div>
-                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/admin/visitors/visitor.jsp'">
+                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/visitors/visitor.jsp'">
                     <i class="fas fa-walking"></i>
                     <span>Visitors</span>
                 </div>
-                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/admin/records/record.jsp'">
+                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/records/record.jsp'">
                     <i class="fas fa-clipboard-list"></i>
                     <span>Records</span>
                 </div>
@@ -62,7 +67,7 @@
                     <i class="fas fa-calendar-check"></i>
                     <span>Attendance</span>
                 </div>
-                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/admin/publishers/publisher.jsp'">
+                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/publishers/publisher.jsp'">
                     <i class="fas fa-building"></i>
                     <span>Publishers</span>
                 </div>
@@ -129,15 +134,14 @@
                     </div>
                      <!-- Attendance Form -->
                     <div class="add-new-container">
-                        <button onclick="openAddUserModal()" class="add-new">Add New </button>
-                        <button class="search-btn" onclick="moveAllAttendance()">Move All Attendance</button>
+                        <button onclick="openAddAttendanceModal()" class="add-new">Add New </button>
+                        <button class="search-btn" onclick="moveAllAttendance()">Move Attendance</button>
                     </div>
                 </div>
                 <div class="table-wrapper">
-                    <table id="usersTable">
+                    <table id="attendanceTable">
                         <thead>
                             <tr>
-                                <th>ID</th>
                                 <th>PATRON NAME</th>
                                 <th>VISIT DATE</th>
                                 <th>TIME IN</th>
@@ -171,7 +175,6 @@
                                             String remarks = rs.getString("remarks");
                             %>
                             <tr>
-                                <td><%= attendanceId %></td>
                                 <td><%= patronName %></td>
                                 <td><%= visitDate %></td>
                                 <td><%= visitTimeIn %></td>
@@ -180,13 +183,13 @@
                                 <td>
                                     <div class="actions">
                                         <div class="tooltip">
-                                            <button class="action-btn edit-btn" onclick="editUser('<%= attendanceId %>')">
+                                            <button class="action-btn edit-btn" onclick="editAttendance('<%= attendanceId %>')">
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                             <span class="tooltiptext">Edit</span>
                                         </div>
                                         <div class="tooltip">
-                                            <button class="action-btn delete-btn" onclick="deleteUser('<%= attendanceId %>')">
+                                            <button class="action-btn delete-btn" onclick="deleteAttendance('<%= attendanceId %>')">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
                                             <span class="tooltiptext">Delete</span>
@@ -216,7 +219,7 @@
         </main>
     </div>
     <!-- Modal for Adding Attendance -->
-            <div id="addUserModal" class="modal" style="display:none;">
+            <div id="addAttendanceModal" class="modal" style="display:none;">
                 <div id="modalContent"></div>
             </div>   
 
@@ -230,19 +233,19 @@
                 }
             }
 
-            function editUser(id) {
-                window.location.href = '<%= request.getContextPath() %>/views/admin/attendance/editAttendance.jsp?id=' + id;
+            function editAttendance(id) {
+                window.location.href = '<%= request.getContextPath() %>/views/attendance/editAttendance.jsp?id=' + id;
             }
 
-            function deleteUser(id) {
+            function deleteAttendance(id) {
                 if (confirm("Are you sure you want to delete this attendance record?")) {
-                    window.location.href = '<%= request.getContextPath() %>/views/admin/attendance/deleteAttendance.jsp?id=' + id;
+                    window.location.href = '<%= request.getContextPath() %>/views/attendance/deleteAttendance.jsp?id=' + id;
                 }
             }
 
             function searchTable() {
                 const input = document.getElementById('searchInput').value.toLowerCase();
-                const table = document.getElementById('usersTable');
+                const table = document.getElementById('attendanceTable');
                 const tr = table.getElementsByTagName('tr');
 
                 for (let i = 1; i < tr.length; i++) {
@@ -260,7 +263,7 @@
             }
 
             function resetTable() {
-                const table = document.getElementById('usersTable');
+                const table = document.getElementById('attendanceTable');
                 const tr = table.getElementsByTagName('tr');
                 for (let i = 1; i < tr.length; i++) {
                     tr[i].style.display = '';
@@ -271,207 +274,9 @@
             function moveAllAttendance() {
                 // Redirect to the process_moveAttendance.jsp to move all records
                 if (confirm("Are you sure you want to move all attendance records? This action cannot be undone.")) {
-                    window.location.href = '<%= request.getContextPath() %>/views/admin/attendance/process_moveAttendance.jsp';
+                    window.location.href = '<%= request.getContextPath() %>/views/attendance/process_moveAttendance.jsp';
                 }
             }
 </script>
-
-<style>
-            /* Modal styles */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgb(0,0,0);
-    background-color: rgba(0,0,0,0.4);
-    padding-top: 60px;
-}
-
-.modal-content {
-    background-color: #fefefe;
-    margin: 5% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
-}
-
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-/* Modal Background */
-.modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1000; /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgba(0, 0, 0, 0.7); /* Dark background with opacity */
-}
-
-/* Modal Content */
-.modal-content {
-    background-color: #fff; /* White background */
-    margin: 10% auto; /* Centered */
-    padding: 20px;
-    border-radius: 8px; /* Rounded corners */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
-    width: 90%; /* Responsive width */
-    max-width: 500px; /* Max width */
-}
-
-/* Close Button */
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-    color: #000; /* Change color on hover */
-    text-decoration: none;
-    cursor: pointer;
-}
-
-/* Form Container */
-.form-container {
-    display: flex;
-    flex-direction: column; /* Stack elements vertically */
-}
-
-/* Form Elements */
-.form-group {
-    margin-bottom: 15px; /* Spacing for form groups */
-}
-
-label {
-    margin-bottom: 5px; /* Spacing for labels */
-    font-weight: bold; /* Bold labels */
-    color: #333; /* Darker text color */
-}
-
-input[type="text"],
-input[type="tel"],
-input[type="email"],
-select {
-    padding: 10px; /* Padding for inputs */
-    border: 1px solid #ccc; /* Light border */
-    border-radius: 4px; /* Rounded corners */
-    font-size: 16px; /* Font size */
-    width: 100%; /* Full width */
-    transition: border-color 0.3s; /* Smooth transition */
-}
-
-input[type="text"]:focus,
-input[type="tel"]:focus,
-input[type="email"]:focus,
-select:focus {
-    border-color: #007BFF; /* Blue border on focus */
-    outline: none; /* Remove outline */
-}
-
-/* Buttons */
-.submit-btn {
-    background-color: #007BFF; /* Primary button color */
-    color: white; /* Text color */
-    padding: 10px; /* Padding */
-    border: none; /* No border */
-    border-radius: 4px; /* Rounded corners */
-    cursor: pointer; /* Pointer cursor */
-    font-size: 16px; /* Font size */
-    transition: background-color 0.3s; /* Smooth transition */
-    margin-top: 10px; /* Spacing above button */
-}
-
-.submit-btn:hover {
-    background-color: #0056b3; /* Darker blue on hover */
-}
-
-.cancel-btn {
-    background-color: #ccc; /* Gray color for cancel */
-    color: black; /* Text color */
-    padding: 10px; /* Padding */
-    border: none; /* No border */
-    border-radius: 4px; /* Rounded corners */
-    cursor: pointer; /* Pointer cursor */
-    font-size: 16px; /* Font size */
-    margin-left: 10px; /* Spacing between buttons */
-    margin-top: 10px; /* Spacing above button */
-}
-
-.cancel-btn:hover {
-    background-color: #aaa; /* Darker gray on hover */
-}
-/* Button Styles */
-    .search-btn, .back-btn {
-        background-color: #007BFF; /* Primary button color */
-        color: white; /* Text color */
-        padding: 10px 15px; /* Padding */
-        border: none; /* No border */
-        border-radius: 4px; /* Rounded corners */
-        cursor: pointer; /* Pointer cursor */
-        font-size: 16px; /* Font size */
-        transition: background-color 0.3s; /* Smooth transition */
-        margin-top: 10px; /* Spacing above button */
-        margin-right: 10px; /* Spacing between buttons */
-    }
-
-    .search-btn:hover, .back-btn:hover {
-        background-color: #0056b3; /* Darker blue on hover */
-    }
-
-    .search-btn:focus, .back-btn:focus {
-        outline: none; /* Remove outline */
-        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add shadow on focus */
-    }
-    .tooltip {
-        position: relative;
-        display: inline-block;
-        cursor: pointer;
-    }
-
-    .tooltip .tooltiptext {
-        visibility: hidden;
-        width: 120px;
-        background-color: black;
-        color: #fff;
-        text-align: center;
-        border-radius: 6px;
-        padding: 5px;
-        position: absolute;
-        z-index: 1;
-        bottom: 125%; /* Position above the button */
-        left: 50%;
-        margin-left: -60px; /* Center the tooltip */
-        opacity: 0; /* Hidden by default */
-        transition: opacity 0.3s; /* Fade effect */
-    }
-
-    .tooltip:hover .tooltiptext {
-        visibility: visible;
-        opacity: 1; /* Show the tooltip */
-    }
-</style>
-    </div>
 </body>
 </html>

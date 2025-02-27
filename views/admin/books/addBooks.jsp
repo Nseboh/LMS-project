@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add New Books</title>
+    <title>Add New Book</title>
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
 </head>
 <body>
@@ -13,22 +13,33 @@
         <span class="close" onclick="closeAddBookModal()">&times;</span>
         <div class="form-container">
             <h1>Add New Book</h1>
-            <form id="addBookForm" action="<%= request.getContextPath() %>/views/admin/books/process_addBook.jsp" method="POST">
+            <form id="addBookForm" action="process_addBook.jsp" method="POST">
                 <div class="form-group">
-                    <label for="title">Title*</label>
-                    <input type="text" id="title" name="title" required>
+                    <label for="isbn">ISBN/ISSN:</label>
+                    <input type="text" id="isbn" name="isbn" required placeholder="Enter ISBN/ISSN">
                 </div>
                 <div class="form-group">
-                    <label for="authorId">Author*</label>
-                    <select id="authorId" name="authorId" required>
+                    <label for="title">Title:</label>
+                    <input type="text" id="title" name="title" required placeholder="Enter Book Title">
+                </div>
+                <div class="form-group">
+                    <label for="author_id">Author:</label>
+                    <select id="author_id" name="author_id" required>
                         <option value="">Select Author</option>
                         <%
                             // Fetch authors from the database
+                            String dbUrl = "jdbc:mysql://localhost:3306/lms";
+                            String dbUser = "root";
+                            String dbPassword = "Righteous050598$";
+                            Connection conn = null;
+                            Statement stmt = null;
+                            ResultSet rs = null;
+
                             try {
-                                Class.forName("com.mysql.jdbc.Driver");
-                                Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
-                                Statement stmt = conn.createStatement();
-                                ResultSet rs = stmt.executeQuery("SELECT author_id, CONCAT(first_name, ' ', last_name) AS full_name FROM author");
+                                Class.forName("com.mysql.cj.jdbc.Driver");
+                                conn = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+                                stmt = conn.createStatement();
+                                rs = stmt.executeQuery("SELECT author_id, CONCAT(first_name, ' ', last_name) AS full_name FROM authors");
 
                                 while (rs.next()) {
                                     String authorId = rs.getString("author_id");
@@ -37,65 +48,70 @@
                         <option value="<%= authorId %>"><%= fullName %></option>
                         <%
                                 }
-                                conn.close();
                             } catch (Exception e) {
                                 e.printStackTrace();
+                            } finally {
+                                try {
+                                    if (rs != null) rs.close();
+                                    if (stmt != null) stmt.close();
+                                    if (conn != null) conn.close();
+                                } catch (SQLException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         %>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="publisherId">Publisher (optional)</label>
-                    <select id="publisherId" name="publisherId">
+                    <label for="genre">Genre:</label>
+                    <input type="text" id="genre" name="genre" required placeholder="Enter Genre">
+                </div>
+                <div class="form-group">
+                    <label for="language">Language:</label>
+                    <input type="text" id="language" name="language" required placeholder="Enter Language">
+                </div>
+                <div class="form-group">
+                    <label for="publication_year">Publication Year:</label>
+                    <input type="number" id="publication_year" name="publication_year" required placeholder="Enter Publication Year" min="1900" max="2100">
+                </div>
+                <div class="form-group">
+                    <label for="total_copies">Total Copies:</label>
+                    <input type="number" id="total_copies" name="total_copies" required placeholder="Enter Total Copies" min="1">
+                </div>
+                <div class="form-group">
+                    <label for="available_copies">Available Copies:</label>
+                    <input type="number" id="available_copies" name="available_copies" required placeholder="Enter Available Copies" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="publisher_id">Publisher:</label>
+                    <select id="publisher_id" name="publisher_id" required>
                         <option value="">Select Publisher</option>
                         <%
                             // Fetch publishers from the database
                             try {
-                                Class.forName("com.mysql.jdbc.Driver");
-                                Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
-                                Statement stmt = conn.createStatement();
-                                ResultSet rs = stmt.executeQuery("SELECT publisher_id, name FROM publisher");
+                                conn = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+                                stmt = conn.createStatement();
+                                rs = stmt.executeQuery("SELECT publisher_id, Publication_name FROM publisher");
 
                                 while (rs.next()) {
                                     String publisherId = rs.getString("publisher_id");
-                                    String publisherName = rs.getString("name");
+                                    String publisherName = rs.getString("Publication_name");
                         %>
                         <option value="<%= publisherId %>"><%= publisherName %></option>
                         <%
                                 }
-                                conn.close();
                             } catch (Exception e) {
                                 e.printStackTrace();
+                            } finally {
+                                try {
+                                    if (rs != null) rs.close();
+                                    if (stmt != null) stmt.close();
+                                    if (conn != null) conn.close();
+                                } catch (SQLException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         %>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="isbn">ISBN (optional)</label>
-                    <input type="text" id="isbn" name="isbn">
-                </div>
-                <div class="form-group">
-                    <label for="publicationYear">Publication Year (optional)</label>
-                    <input type="number" id="publicationYear" name="publicationYear" min="1900" max="2100">
-                </div>
-                <div class="form-group">
-                    <label for="edition">Edition (optional)</label>
-                    <input type="text" id="edition" name="edition">
-                </div>
-                <div class="form-group">
-                    <label for="totalCopies">Total Copies*</label>
-                    <input type="number" id="totalCopies" name="totalCopies" required min="1">
-                </div>
-                <div class="form-group">
-                    <label for="copiesAvailable">Copies Available*</label>
-                    <input type="number" id="copiesAvailable" name="copiesAvailable" required min="0">
-                </div>
-                <div class="form-group">
-                    <label for="status">Status*</label>
-                    <select id="status" name="status" required>
-                        <option value="">Select Status</option>
-                        <option value="active">Active</option>
-                        <option value="archived">Archived</option>
                     </select>
                 </div>
                 <div class="form-actions">
@@ -105,5 +121,15 @@
             </form>
         </div>
     </div>
+    <% if (session.getAttribute("error_message") != null) { %>
+        <div class="alert alert-danger">
+            <p><%= session.getAttribute("error_message") %></p>
+            <button onclick="closeAlert()" class="close-alert">&times;</button>
+        </div>
+        <%
+            // Clear the session attribute after displaying it
+            session.removeAttribute("error_message");
+        %>
+    <% } %>
 </body>
 </html>

@@ -1,52 +1,42 @@
-<%@ page import="java.sql.*" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.sql.*" %>
+<%@ page import="javax.servlet.*" %>
+<%@ page import="javax.servlet.http.*" %>
 
 <%
-    // Get form data
     String authorId = request.getParameter("author_id");
     String firstName = request.getParameter("first_name");
     String lastName = request.getParameter("last_name");
-    String isbn = request.getParameter("isbn");
+    String dateOfBirth = request.getParameter("date_of_birth");
     String nationality = request.getParameter("nationality");
+    String biography = request.getParameter("biography");
     String email = request.getParameter("email");
-
-    String dbURL = "jdbc:mysql://localhost:3306/lms";
-    String dbUser = "root";
-    String dbPassword = "Righteous050598$"; // Updated database password
-
-    Connection connection = null;
-    PreparedStatement preparedStatement = null;
+    String website = request.getParameter("website");
 
     try {
+        // Insert into database
         Class.forName("com.mysql.cj.jdbc.Driver");
-        connection = DriverManager.getConnection(dbURL, dbUser, dbPassword);
-
-        // Insert author data
-        String sql = "INSERT INTO author (author_id, first_name, last_name, isbn, nationality, email) VALUES (?, ?, ?, ?, ?, ?, NOW())";
-        
-        preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setString(1, authorId);
-        preparedStatement.setString(2, firstName);
-        preparedStatement.setString(3, lastName);
-        preparedStatement.setString(4, isbn);
-        preparedStatement.setString(5, nationality);
-        preparedStatement.setString(6, email);
-
-        int rowsInserted = preparedStatement.executeUpdate();
-        if (rowsInserted > 0) {
-            session.setAttribute("success_message", "Author added successfully!");
-        } else {
-            session.setAttribute("error_message", "Error adding author.");
-        }
+        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
+        String sql = "INSERT INTO authors (author_id, first_name, last_name, date_of_birth, nationality, biography, email, website, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setString(1, authorId);
+        pstmt.setString(2, firstName);
+        pstmt.setString(3, lastName);
+        pstmt.setString(4, dateOfBirth);
+        pstmt.setString(5, nationality);
+        pstmt.setString(6, biography);
+        pstmt.setString(7, email);
+        pstmt.setString(8, website);
+        pstmt.executeUpdate();
+        conn.close();
+        response.sendRedirect("author.jsp"); // Redirect to the author list or another page
+    } catch (SQLException sqlEx) {
+        sqlEx.printStackTrace();
+        session.setAttribute("error_message", "Database error: " + sqlEx.getMessage());
+        response.sendRedirect("addAuthor.jsp");
     } catch (Exception e) {
         e.printStackTrace();
         session.setAttribute("error_message", "Error: " + e.getMessage());
-    } finally {
-        if (preparedStatement != null) try { preparedStatement.close(); } catch (SQLException ignore) {}
-        if (connection != null) try { connection.close(); } catch (SQLException ignore) {}
+        response.sendRedirect("addAuthor.jsp");
     }
 %>
-<%
-    // Redirect to authors.jsp to display messages
-    response.sendRedirect("authors.jsp");
-%> 

@@ -1,6 +1,4 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.sql.*" %>
-<%@ page import="java.io.*" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,13 +6,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add New Author</title>
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
+    <script>
+        // Client-side form validation
+        function validateForm() {
+            // Validate required text fields
+            const requiredFields = ['authorId', 'firstName', 'lastName', 'dateOfBirth', 'nationality', 'biography', 'email'];
+            for (let field of requiredFields) {
+                if (document.getElementById(field).value.trim() === '') {
+                    alert(field.replace(/([A-Z])/g, ' $1') + ' is required.');
+                    return false;
+                }
+            }
+
+            // Validate email format
+            const email = document.getElementById('email').value;
+            const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (!emailPattern.test(email)) {
+                alert('Please enter a valid email address.');
+                return false;
+            }
+
+            return true; // Allow form submission if all validations pass
+        }
+    </script>
 </head>
 <body>
     <div class="modal-content">
         <span class="close" onclick="closeAddAuthorModal()">&times;</span>
         <div class="form-container">
             <h1>Add New Author</h1>
-            <form id="addAuthorForm" action="<%= request.getContextPath() %>/views/authors/process_addAuthor.jsp" method="POST" enctype="multipart/form-data">
+            <form id="addAuthorForm" action="<%= request.getContextPath() %>/views/authors/process_addAuthor.jsp" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
                 <div class="form-group">
                     <label for="authorId">Author ID*</label>
                     <input type="text" id="authorId" name="author_id" required>
@@ -45,11 +66,7 @@
                 </div>
                 <div class="form-group">
                     <label for="website">Website</label>
-                    <input type="text" id="website" name="website">
-                </div>
-                <div class="form-group">
-                    <label for="image_url">Author Photo</label>
-                    <input type="file" id="image_url" name="image_url" accept="image/*" required>
+                    <input type="url" id="website" name="website">
                 </div>
                 <div class="form-actions">
                     <button type="submit" class="submit-btn">Add Author</button>
@@ -58,13 +75,14 @@
             </form>
         </div>
     </div>
+    <%-- Display error message if present in session --%>
     <% if (session.getAttribute("error_message") != null) { %>
         <div class="alert alert-danger">
             <p><%= session.getAttribute("error_message") %></p>
             <button onclick="closeAlert()" class="close-alert">&times;</button>
         </div>
+        <%-- Clear the session attribute after displaying it --%>
         <%
-            // Clear the session attribute after displaying it
             session.removeAttribute("error_message");
         %>
     <% } %>

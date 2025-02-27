@@ -93,8 +93,8 @@
         }
     </style>
     <script>
-        function closeAddUserModal() {
-            document.getElementById('addUserModal').style.display = 'none';
+        function closeAddAttendanceModal() {
+            document.getElementById('addAttendanceModal').style.display = 'none';
         }
 
         // Automatically fill the patron ID when the barcode is scanned
@@ -106,10 +106,10 @@
 </head>
 <body>
     <div class="modal-content">
-        <span class="close" onclick="closeAddUserModal()">&times;</span>
+        <span class="close" onclick="closeAddAttendanceModal()">&times;</span>
         <div class="form-container">
             <h1>Add New Attendance</h1>
-            <form id="addAttendanceForm" action="<%= request.getContextPath() %>/views/admin/attendance/process_addAttendance.jsp" method="POST">
+            <form id="addAttendanceForm" action="<%= request.getContextPath() %>/views/attendance/process_addAttendance.jsp" method="POST">
                 <div class="form-group">
                     <label for="scanId">Scan ID*</label>
                     <input type="text" id="scanId" name="scanId" placeholder="Scan Patron Barcode" oninput="handleBarcodeInput(event)" required>
@@ -132,7 +132,7 @@
                 </div>
                 <div class="form-actions">
                     <button type="submit" class="submit-btn">Submit</button>
-                    <button type="button" class="cancel-btn" onclick="closeAddUserModal()">Cancel</button>
+                    <button type="button" class="cancel-btn" onclick="closeAddAttendanceModal()">Cancel</button>
                 </div>
             </form>
         </div>

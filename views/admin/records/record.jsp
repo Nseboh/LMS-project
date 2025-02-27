@@ -8,6 +8,7 @@
     <title>JE.Library - Records</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/superadmin.css">
 </head>
 <body>
     <div class="container">
@@ -21,19 +22,23 @@
             </div>
             <div class="sidebar-divider"></div>
             <nav class="sidebar-nav">
-                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/admin/patron/patron.jsp'">
+                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/superadmin/superadminDashboard.jsp'">
+                    <i class="fas fa-users"></i>
+                    <span>Staff</span>
+                </div>
+                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/patron/patron.jsp'">
                     <i class="fas fa-users"></i>
                     <span>Patrons</span>
                 </div>
-                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/admin/authors/authors.jsp'">
+                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/authors/author.jsp'">
                     <i class="fas fa-pen-fancy"></i>
                     <span>Authors</span>
                 </div>
-                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/admin/books/books.jsp'">
+                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/books/books.jsp'">
                     <i class="fas fa-book"></i>
                     <span>Books</span>
                 </div>
-                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/admin/visitors/visitor.jsp'">
+                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/visitors/visitor.jsp'">
                     <i class="fas fa-walking"></i>
                     <span>Visitors</span>
                 </div>
@@ -41,11 +46,11 @@
                     <i class="fas fa-clipboard-list"></i>
                     <span>Records</span>
                 </div>
-                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/admin/attendance/attendance.jsp'">
+                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/attendance/attendance.jsp'">
                     <i class="fas fa-calendar-check"></i>
                     <span>Attendance</span>
                 </div>
-                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/admin/publishers/publisher.jsp'">
+                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/publishers/publisher.jsp'">
                     <i class="fas fa-building"></i>
                     <span>Publishers</span>
                 </div>
@@ -71,13 +76,13 @@
             <div class="stats-cards">
                 <div class="stat-card">
                     <div class="stat-header">
-                        <i class="fas fa-user-plus"></i>
+                        <i class="fas fa-clipboard-listx"></i>
                         <h3>Total Records</h3>
                     </div>
                     <p class="stat-number">
                         <%
-                            // Fetch total registered users excluding super admins
-                            int totalUsers = 0;
+                            // Fetch total registered records excluding super admins
+                            int totalRecords = 0;
                             
                             try {
                                 Class.forName("com.mysql.jdbc.Driver");
@@ -85,7 +90,7 @@
                                 Statement stmt = conn.createStatement();
                                 ResultSet rs = stmt.executeQuery("SELECT COUNT(*) AS total FROM record");
                                 if (rs.next()) {
-                                    totalUsers = rs.getInt("total");
+                                    totalRecords = rs.getInt("total");
                                 }
                                 
                                 
@@ -93,7 +98,7 @@
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                            out.print(totalUsers);
+                            out.print(totalRecords);
                         %>
                     </p>
                 </div>
@@ -116,7 +121,6 @@
                     <table id="usersTable">
                         <thead>
                             <tr>
-                                <th>ID</th>
                                 <th>PATRON NAME</th>
                                 <th>VISIT DATE</th>
                                 <th>TIME IN</th>
@@ -146,7 +150,6 @@
                                         String remarks = rs.getString("remarks");
                         %>
                         <tr>
-                            <td><%= recordId %></td>
                             <td><%= patronName %></td>
                             <td><%= visitDate %></td>
                             <td><%= visitTimeIn %></td>
@@ -167,29 +170,6 @@
             </div>
         </main>
     </div>
-    <style>
-    /* Button Styles */
-    .search-btn, .back-btn {
-        background-color: #007BFF; /* Primary button color */
-        color: white; /* Text color */
-        padding: 10px 15px; /* Padding */
-        border: none; /* No border */
-        border-radius: 4px; /* Rounded corners */
-        cursor: pointer; /* Pointer cursor */
-        font-size: 16px; /* Font size */
-        transition: background-color 0.3s; /* Smooth transition */
-        margin-top: 10px; /* Spacing above button */
-        margin-right: 10px; /* Spacing between buttons */
-    }
-
-    .search-btn:hover, .back-btn:hover {
-        background-color: #0056b3; /* Darker blue on hover */
-    }
-
-    .search-btn:focus, .back-btn:focus {
-        outline: none; /* Remove outline */
-        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add shadow on focus */
-    }
-    </style>
+    
 </body>
 </html>

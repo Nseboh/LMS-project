@@ -1,24 +1,8 @@
 <%@ page import="java.sql.*" %>
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
 
 <%
-    String idParam = request.getParameter("id");
-    int authorId = -1; // Default value for authorId
-
-    // Check if the id parameter is present and valid
-    if (idParam != null && !idParam.isEmpty()) {
-        try {
-            authorId = Integer.parseInt(idParam);
-        } catch (NumberFormatException e) {
-            session.setAttribute("error_message", "Invalid author ID.");
-            response.sendRedirect("authors.jsp");
-            return; // Exit the JSP
-        }
-    } else {
-        session.setAttribute("error_message", "Author ID is required.");
-        response.sendRedirect("authors.jsp");
-        return; // Exit the JSP
-    }
+    String authorId = request.getParameter("id");
 
     String dbURL = "jdbc:mysql://localhost:3306/lms";
     String dbUser = "root";
@@ -31,9 +15,9 @@
         Class.forName("com.mysql.cj.jdbc.Driver");
         connection = DriverManager.getConnection(dbURL, dbUser, dbPassword);
 
-        String sql = "DELETE FROM author WHERE author_id = ?";
+        String sql = "DELETE FROM authors WHERE author_id = ?";
         preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setInt(1, authorId);
+        preparedStatement.setString(1, authorId);
 
         int rowsAffected = preparedStatement.executeUpdate();
         if (rowsAffected > 0) {
@@ -49,7 +33,4 @@
         if (connection != null) try { connection.close(); } catch (SQLException ignore) {}
     }
 %>
-<%
-    // Redirect to authors.jsp to display messages
-    response.sendRedirect("authors.jsp");
-%> 
+<a href="<%= request.getContextPath() %>/views/authors/author.jsp">Back to Authors</a> 

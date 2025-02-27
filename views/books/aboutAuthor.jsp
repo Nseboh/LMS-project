@@ -135,7 +135,7 @@
             <li><%= book %></li>
         <% } %>
     </ul>
-    <button class="close-button" onclick="window.location.href='author.jsp'">Close</button>
+    <button class="close-button" onclick="window.location.href='books.jsp'">Close</button>
 </div>
 
 </body>
