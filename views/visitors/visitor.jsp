@@ -74,7 +74,7 @@
                     <i class="fas fa-building"></i>
                     <span>Publishers</span>
                 </div>
-                <div class="nav-item" onclick="window.location.href='issuedBooks.jsp'">
+                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/issuedBooks/lending.jsp'">
                     <i class="fas fa-book-open"></i>
                     <span>Issued Books</span>
                 </div>
