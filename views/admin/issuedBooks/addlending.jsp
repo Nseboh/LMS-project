@@ -12,7 +12,7 @@
 <body>
     <div class="modal-content">
         <span class="close" onclick="closeAddlendingModal()">&times;</span>
-    <div class="form-container">
+        <div class="form-container">
             <h1>Lended Book</h1>
             <form id="addlendingForm" action="processAddLending.jsp" method="POST">
                 <div class="form-group">
@@ -94,7 +94,7 @@
                     <button type="button" class="cancel-btn" onclick="closeAddlendingModal()">Cancel</button>
                 </div>
             </form>
-            </div>
+        </div>
     </div>
     <% if (session.getAttribute("error_message") != null) { %>
         <div class="alert alert-danger">

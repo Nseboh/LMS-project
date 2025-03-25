@@ -38,11 +38,7 @@
             </div>
             <div class="sidebar-divider"></div>
             <nav class="sidebar-nav">
-                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/superadmin/superadminDashboard.jsp'">
-                    <i class="fas fa-users"></i>
-                    <span>Staff</span>
-                </div>
-                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/patron/patron.jsp'">
+                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/admin/patron/patron.jsp'">
                     <i class="fas fa-users"></i>
                     <span>Patrons</span>
                 </div>
@@ -50,27 +46,27 @@
                     <i class="fas fa-pen-fancy"></i>
                     <span>Authors</span>
                 </div>
-                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/books/books.jsp'">
+                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/admin/books/books.jsp'">
                     <i class="fas fa-book"></i>
                     <span>Books</span>
                 </div>
-                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/visitors/visitor.jsp'">
+                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/admin/visitors/visitor.jsp'">
                     <i class="fas fa-walking"></i>
                     <span>Visitors</span>
                 </div>
-                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/records/record.jsp'">
+                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/admin/records/record.jsp'">
                     <i class="fas fa-clipboard-list"></i>
                     <span>Records</span>
                 </div>
-                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/attendance/attendance.jsp'">
+                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/admin/attendance/attendance.jsp'">
                     <i class="fas fa-calendar-check"></i>
                     <span>Attendance</span>
                 </div>
-                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/publishers/publisher.jsp'">
+                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/admin/publishers/publisher.jsp'">
                     <i class="fas fa-building"></i>
                     <span>Publishers</span>
                 </div>
-                <div class="nav-item" onclick="window.location.href='issuedBooks.jsp'">
+                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/admin/issuedBooks/lending.jsp'">
                     <i class="fas fa-book-open"></i>
                     <span>Issued Books</span>
                 </div>
