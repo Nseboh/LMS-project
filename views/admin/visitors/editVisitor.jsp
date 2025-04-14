@@ -120,8 +120,8 @@
                 <textarea id="remarks" name="remarks" rows="4"><%= remarks %></textarea>
             </div>
             <div class="form-actions">
-                <button type="submit" class="submit-btn">Update Visitor</button>
-                <button type="button" class="cancel-btn" onclick="window.location.href='<%= request.getContextPath() %>/views/visitors/visitor.jsp'">Cancel</button>
+                <button type="submit" class="submit-btn" style="background-color:rgb(19, 175, 58);">Update Visitor</button>
+                <button type="button" class="submit-btn" onclick="window.location.href='<%= request.getContextPath() %>/views/visitors/visitor.jsp'" style="background-color:rgb(201, 43, 43);">Cancel</button>
             </div>
         </form>
     </div>

@@ -7,7 +7,6 @@
     String dateOfBirth = request.getParameter("date_of_birth");
     String nationality = request.getParameter("nationality");
     String biography = request.getParameter("biography");
-    String email = request.getParameter("email");
     String website = request.getParameter("website");
 
     try {
@@ -21,9 +20,8 @@
         pstmt.setDate(3, java.sql.Date.valueOf(dateOfBirth));
         pstmt.setString(4, nationality);
         pstmt.setString(5, biography);
-        pstmt.setString(6, email);
-        pstmt.setString(7, website);
-        pstmt.setString(8, authorId);
+        pstmt.setString(6, website);
+        pstmt.setString(7, authorId);
 
         int rowsUpdated = pstmt.executeUpdate();
         if (rowsUpdated > 0) {

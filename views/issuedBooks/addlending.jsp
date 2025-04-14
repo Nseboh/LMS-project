@@ -90,8 +90,8 @@
                     </select>
                 </div>
                 <div class="form-actions">
-                    <button type="submit" class="submit-btn">Lend Book</button>
-                    <button type="button" class="cancel-btn" onclick="closeAddlendingModal()">Cancel</button>
+                    <button type="submit" class="cancel-btn" style="background-color:rgb(19, 175, 58); color: white;">Lend Book</button>
+                    <button type="button" class="cancel-btn" onclick="closeAddlendingModal()" style="background-color:rgb(201, 43, 43); color: white;">Cancel</button>
                 </div>
             </form>
             </div>

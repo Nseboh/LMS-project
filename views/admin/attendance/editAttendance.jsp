@@ -75,8 +75,8 @@
                 <textarea id="remarks" name="remarks" rows="4" required><%= remarks %></textarea>
             </div>
             <div class="form-actions">
-                <button type="submit" class="submit-btn">Save</button>
-                <button type="button" class="cancel-btn" onclick="window.location.href='<%= request.getContextPath() %>/views/attendance/attendance.jsp'">Cancel</button>
+                <button type="submit" class="submit-btn" style="background-color:rgb(19, 175, 58);">Save</button>
+                <button type="button" class="cancel-btn" onclick="window.location.href='<%= request.getContextPath() %>/views/attendance/attendance.jsp'" style="background-color:rgb(201, 43, 43);">Cancel</button>
             </div>
         </form>
     </div>

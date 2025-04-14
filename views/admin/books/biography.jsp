@@ -9,9 +9,7 @@
     String authorBiography = "";
     String dateOfBirth = "";
     String nationality = "";
-    String email = "";
     String website = "";
-    String imagePath = ""; // Variable to hold the image path
     List<String> books = new ArrayList<>(); // List to hold book titles
 
     if (authorId != null) {
@@ -20,7 +18,7 @@
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
 
             // Fetch author details including additional fields
-            PreparedStatement pstmt = conn.prepareStatement("SELECT first_name, last_name, biography, date_of_birth, nationality, email, website, image_path FROM authors WHERE author_id = ?");
+            PreparedStatement pstmt = conn.prepareStatement("SELECT first_name, last_name, biography, date_of_birth, nationality, website FROM authors WHERE author_id = ?");
             pstmt.setString(1, authorId);
             ResultSet rs = pstmt.executeQuery();
 
@@ -29,9 +27,7 @@
                 authorBiography = rs.getString("biography");
                 dateOfBirth = rs.getString("date_of_birth");
                 nationality = rs.getString("nationality");
-                email = rs.getString("email");
                 website = rs.getString("website");
-                imagePath = rs.getString("image_path"); // Fetch the image path
             }
 
             // Fetch books written by the author
@@ -124,11 +120,9 @@
 <body>
 
 <div class="author-card">
-    <img src="<%= imagePath %>" alt="Author Image">
     <h2><%= authorName %></h2>
     <p><strong>Date of Birth:</strong> <%= dateOfBirth %></p>
     <p><strong>Nationality:</strong> <%= nationality %></p>
-    <p><strong>Email:</strong> <a href="mailto:<%= email %>"><%= email %></a></p>
     <p><strong>Website:</strong> <a href="<%= website %>" target="_blank"><%= website %></a></p>
     <hr>
     <p><strong>Biography:</strong> <%= authorBiography %></p>
@@ -138,7 +132,7 @@
             <li><%= book %></li>
         <% } %>
     </ul>
-    <button class="close-button" onclick="window.location.href='books.jsp'">Close</button>
+    <button class="close-button" onclick="window.location.href='books.jsp'" style="background-color:rgb(201, 43, 43);">Close</button>
 </div>
 
 </body>

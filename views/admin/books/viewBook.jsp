@@ -119,7 +119,7 @@
     <p><strong>Total Copies:</strong> <%= totalCopies %></p>
     <p><strong>Copies Available:</strong> <%= copiesAvailable %></p>
     <p><strong>Status:</strong> <%= status != null ? status : "N/A" %></p>
-    <button class="close-button" onclick="window.location.href='books.jsp'">Back to Books List</button>
+    <button class="close-button" onclick="window.location.href='books.jsp'" style="background-color:rgb(201, 43, 43);">Back</button>
 </div>
 
 </body>

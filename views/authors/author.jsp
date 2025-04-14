@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JE.Library - Authors</title>
+    <title>Takoradi Library - Authors</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/superadmin.css">
@@ -29,63 +29,63 @@
 <body>
     <div class="container">
         <!-- Sidebar -->
-        <div class="sidebar">
+        <div class="sidebar" style="background-color: #070D59;">
             <div class="logo">
                 <div class="logo-img">
-                    <img src="<%= request.getContextPath() %>/images/img%201.jpeg" alt="Logo" style="border-radius: 50%; width: 40px; height: 40px;">
+                    <img src="<%= request.getContextPath() %>/images/TakoradiLibrary.jpeg" alt="Logo" style="border-radius: 50%; width: 40px; height: 40px;">
                 </div>
-                <div class="logo-text">JE.Library</div>
+                <div class="logo-text" style="color: #ffffff;">Takoradi Library</div>
             </div>
-            <div class="sidebar-divider"></div>
+            <div class="sidebar-divider" style="background-color: #ffffff; opacity: 0.2;"></div>
             <nav class="sidebar-nav">
-                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/superadmin/superadminDashboard.jsp'">
-                    <i class="fas fa-users"></i>
-                    <span>Staff</span>
+                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/superadmin/superadminDashboard.jsp'" style="color: #ffffff;">
+                    <i class="fas fa-users" style="color: #ffffff;"></i>
+                    <span style="color:white;">Staff</span>
                 </div>
-                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/patron/patron.jsp'">
-                    <i class="fas fa-users"></i>
-                    <span>Patrons</span>
+                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/patron/patron.jsp'" style="color: #ffffff;">
+                    <i class="fas fa-users" style="color: #ffffff;"></i>
+                    <span style="color: #ffffff;">Patrons</span>
                 </div>
-                <div class="nav-item active">
-                    <i class="fas fa-pen-fancy"></i>
+                <div class="nav-item active" style="color: #000000; background-color: #ffffff;">
+                    <i class="fas fa-pen-fancy" style="color: #000000;"></i>
                     <span>Authors</span>
                 </div>
-                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/books/books.jsp'">
-                    <i class="fas fa-book"></i>
-                    <span>Books</span>
+                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/books/books.jsp'" style="color: #ffffff;">
+                    <i class="fas fa-book" style="color: #ffffff;"></i>
+                    <span style="color: #ffffff;">Books</span>
                 </div>
-                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/visitors/visitor.jsp'">
-                    <i class="fas fa-walking"></i>
-                    <span>Visitors</span>
+                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/visitors/visitor.jsp'" style="color: #ffffff;">
+                    <i class="fas fa-walking" style="color: #ffffff;"></i>
+                    <span style="color: #ffffff;">Visitors</span>
                 </div>
-                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/records/record.jsp'">
-                    <i class="fas fa-clipboard-list"></i>
-                    <span>Records</span>
+                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/records/record.jsp'" style="color: #ffffff;">
+                    <i class="fas fa-clipboard-list" style="color: #ffffff;"></i>
+                    <span style="color: #ffffff;">Records</span>
                 </div>
-                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/attendance/attendance.jsp'">
-                    <i class="fas fa-calendar-check"></i>
-                    <span>Attendance</span>
+                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/attendance/attendance.jsp'" style="color: #ffffff;">
+                    <i class="fas fa-calendar-check" style="color: #ffffff;"></i>
+                    <span style="color: #ffffff;">Attendance</span>
                 </div>
-                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/publishers/publisher.jsp'">
-                    <i class="fas fa-building"></i>
-                    <span>Publishers</span>
+                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/publishers/publisher.jsp'" style="color: #ffffff;">
+                    <i class="fas fa-building" style="color: #ffffff;"></i>
+                    <span style="color: #ffffff;">Publishers</span>
                 </div>
-                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/issuedBooks/lending.jsp'">
-                    <i class="fas fa-book-open"></i>
-                    <span>Issued Books</span>
+                <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/issuedBooks/lending.jsp'" style="color: #ffffff;">
+                    <i class="fas fa-book-open" style="color: #ffffff;"></i>
+                    <span style="color: #ffffff;">Issued Books</span>
                 </div>
             </nav>
             <div class="settings">
-                <a href="<%= request.getContextPath() %>/views/logout.jsp">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Logout</span>
+                <a href="<%= request.getContextPath() %>/views/logout.jsp" style="color: #ffffff; text-decoration: none;">
+                    <i class="fas fa-sign-out-alt" style="color: #ffffff;"></i>
+                    <span style="color: #ffffff;">Logout</span>
                 </a>
             </div>
         </div>
 
         <!-- Main Content -->
         <main class="main-content">
-            <header class="header">
+            <header class="header" style="background-color:rgb(10, 18, 121);">
                 <h1>Authors</h1>
             </header>
 
@@ -93,7 +93,7 @@
             <div class="stats-cards">
                 <div class="stat-card">
                     <div class="stat-header">
-                        <i class="fas fa-pen-fancy"></i>
+                        <i class="fas fa-pen-fancy" style="color:rgb(10, 18, 121);"></i>
                         <h3>Registered Authors</h3>
                     </div>
                     <p class="stat-number">
@@ -126,11 +126,11 @@
                     </div>
                     <div class="search-container">
                         <input type="search" id="searchInput" placeholder="Search Authors" class="search-input" />
-                        <button class="search-btn" onclick="searchAuthors()">Search</button>
-                        <button class="back-btn" onclick="resetTable()">Back</button>
+                        <button class="search-btn" onclick="searchAuthors()" style="background-color:rgb(19, 175, 58); margin-left:30px;">Search</button>
+                        <button class="back-btn" onclick="resetTable()" style="background-color:rgb(201, 43, 43);">Cancel</button>
                     </div>
                     <div class="add-new-container">
-                        <button onclick="openAddAuthorModal()" class="add-new">Add New</button>
+                        <button onclick="openAddAuthorModal()" class="add-new" style="background-color:rgb(10, 18, 121); margin-left:30px;">Add New</button>
                     </div>
                 </div>
                 <div class="table-wrapper">

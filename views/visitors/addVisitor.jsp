@@ -87,8 +87,8 @@
                 <input type="text" id="remarks" name="remarks" maxlength="255">
             </div>
             <div class="form-actions">
-                <button type="submit" class="submit-btn">Add Visitor</button>
-                <button type="button" class="cancel-btn" onclick="closeAddVisitorModal()">Cancel</button>
+                <button type="submit" class="cancel-btn" style="background-color:rgb(19, 175, 58); color:white;">Add Visitor</button>
+                <button type="button" class="cancel-btn" onclick="window.location.href='<%= request.getContextPath() %>/views/visitors/visitor.jsp'" style="background-color:rgb(201, 43, 43); color:white;">Cancel</button>
             </div>
         </form>
     </div>

@@ -101,8 +101,8 @@
                 <input type="text" id="publisher_id" name="publisher_id" value="<%= publisherId %>" required>
             </div>
             <div class="form-actions">
-                <button type="submit" class="submit-btn">Update Book</button>
-                <button type="button" class="submit-btn" onclick="window.location.href='books.jsp'">Cancel</button>
+                <button type="submit" class="submit-btn" style="background-color:rgb(19, 175, 58);">Update Book</button>
+                <button type="button" class="submit-btn" onclick="window.location.href='books.jsp'" style="background-color:rgb(201, 43, 43);">Cancel</button>
             </div>
         </form>
     </div>

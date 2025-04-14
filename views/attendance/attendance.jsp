@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JE.Library - Attendance</title>
+    <title>Takoradi Library - Attendance</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/superadmin.css">
@@ -30,70 +30,70 @@
 <body>
     <div class="container">
         <!-- Sidebar -->
-        <div class="sidebar">
+        <div class="sidebar" style="background-color: #070D59;">
             <div class="logo">
-                <div class="logo-img">
-                    <img src="<%= request.getContextPath() %>/images/img%201.jpeg" alt="Logo" style="border-radius: 50%; width: 40px; height: 40px;">
+               <div class="logo-img">
+                    <img src="<%= request.getContextPath() %>/images/TakoradiLibrary.jpeg" alt="Logo" style="border-radius: 50%; width: 40px; height: 40px;">
                 </div>
-                <div class="logo-text">JE.Library</div>
+                <div class="logo-text" style="color:white">Takoradi Library</div>
             </div>
             <div class="sidebar-divider"></div>
             <nav class="sidebar-nav">
                 <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/superadmin/superadminDashboard.jsp'">
-                    <i class="fas fa-users"></i>
-                    <span>Staff</span>
+                    <i class="fas fa-users" style="color:white;"></i>
+                    <span style="color:white">Staff</span>
                 </div>
                 <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/patron/patron.jsp'">
-                    <i class="fas fa-users"></i>
-                    <span>Patrons</span>
+                    <i class="fas fa-users" style="color:white"></i>
+                    <span style="color:white">Patrons</span>
                 </div>
                 <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/authors/author.jsp'">
-                    <i class="fas fa-pen-fancy"></i>
-                    <span>Authors</span>
+                    <i class="fas fa-pen-fancy" style="color:white"></i>
+                    <span style="color:white">Authors</span>
                 </div>
                 <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/books/books.jsp'">
-                    <i class="fas fa-book"></i>
-                    <span>Books</span>
+                    <i class="fas fa-book" style="color:white"></i>
+                    <span style="color:white">Books</span>
                 </div>
                 <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/visitors/visitor.jsp'">
-                    <i class="fas fa-walking"></i>
-                    <span>Visitors</span>
+                    <i class="fas fa-walking" style="color:white"></i>
+                    <span style="color:white">Visitors</span>
                 </div>
                 <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/records/record.jsp'">
-                    <i class="fas fa-clipboard-list"></i>
-                    <span>Records</span>
+                    <i class="fas fa-clipboard-list" style="color:white"></i>
+                    <span style="color:white">Records</span>
                 </div>
-                <div class="nav-item active">
-                    <i class="fas fa-calendar-check"></i>
+                <div class="nav-item active" style="color: #000000; background-color: #ffffff;">
+                    <i class="fas fa-calendar-check" style="color: #000000; background-color: #ffffff;"></i>
                     <span>Attendance</span>
                 </div>
                 <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/publishers/publisher.jsp'">
-                    <i class="fas fa-building"></i>
-                    <span>Publishers</span>
+                    <i class="fas fa-building" style="color:white"></i>
+                    <span style="color:white">Publishers</span>
                 </div>
                 <div class="nav-item" onclick="window.location.href='<%= request.getContextPath() %>/views/issuedBooks/lending.jsp'">
-                    <i class="fas fa-book-open"></i>
-                    <span>Issued Books</span>
+                    <i class="fas fa-book-open" style="color:white"></i>
+                    <span style="color:white">Issued Books</span>
                 </div>
             </nav>
             <div class="settings">
                 <a href="<%= request.getContextPath() %>/views/logout.jsp">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Logout</span>
+                    <i class="fas fa-sign-out-alt" style="color:white"></i>
+                    <span style="color:white">Logout</span>
                 </a>
             </div>
         </div>
 
         <!-- Main Content -->
-        <main class="main-content">
-            <header class="header">
+        <main class="main-content"> 
+            <header class="header" style="background-color:rgb(10, 18, 121);">
                 <h1>Attendance</h1>
             </header>
 
             <div class="stats-cards">
                 <div class="stat-card">
                     <div class="stat-header">
-                        <i class="fas fa-user-plus"></i>
+                        <i class="fas fa-user-plus" style="color:rgb(10, 18, 121);"></i>
                         <h3>Total Attendance</h3>
                     </div>
                     <p class="stat-number">
@@ -129,25 +129,25 @@
                     </div>
                     <div class="search-container">
                         <input type="search" id="searchInput" placeholder="Type to search" class="search-input" />
-                        <button class="search-btn" onclick="searchTable()">Search</button>
-                        <button class="back-btn" onclick="resetTable()">Back</button>
+                        <button class="search-btn" onclick="searchTable()" style="background-color:rgb(19, 175, 58); margin-left:30px;">Search</button>
+                        <button class="back-btn" onclick="resetTable()" style="background-color:rgb(201, 43, 43);">Back</button>
                     </div>
                      <!-- Attendance Form -->
                     <div class="add-new-container">
-                        <button onclick="openAddAttendanceModal()" class="add-new">Add New </button>
-                        <button class="search-btn" onclick="moveAllAttendance()">Move Attendance</button>
+                        <button onclick="openAddAttendanceModal()" class="add-new" style="background-color:rgb(10, 18, 121);">Add New </button>
+                        <button class="search-btn" onclick="moveAllAttendance()" style="background-color:rgb(193, 202, 68); color: black;">Move</button>
                     </div>
                 </div>
                 <div class="table-wrapper">
                     <table id="attendanceTable">
                         <thead>
                             <tr>
-                                <th>PATRON NAME</th>
-                                <th>VISIT DATE</th>
-                                <th>TIME IN</th>
-                                <th>TIME OUT</th>
-                                <th>REMARKS</th>
-                                <th>ACTION</th>
+                                <th>Patron Name</th>
+                                <th>Visit Date</th>
+                                <th>Time In</th>
+                                <th>Time Out</th>
+                                <th>Remarks</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>

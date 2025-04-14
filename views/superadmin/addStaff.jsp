@@ -77,8 +77,8 @@
                 </div>
                 
                 <div class="form-actions">
-                    <button type="submit" class="submit-btn">Add Staff</button>
-                    <button type="button" class="cancel-btn" onclick="closeAddUserModal()">Cancel</button>
+                    <button type="submit" class="cancel-btn" style="background-color:rgb(19, 175, 58); color:white;">Add Staff</button>
+                    <button type="button" class="cancel-btn" onclick="closeAddUserModal()" style="background-color:rgb(201, 43, 43); color:white;">Cancel</button>
                 </div>
             </form>
         </div>

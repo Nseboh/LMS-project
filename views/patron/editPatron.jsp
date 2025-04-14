@@ -110,8 +110,8 @@
                 </select>
             </div>
             <div class="form-actions">
-                <button type="submit" class="submit-btn">Update Patron</button>
-                <button type="button" class="cancel-btn" onclick="window.location.href='<%= request.getContextPath() %>/views/patron/patron.jsp'">Cancel</button>
+                <button type="submit" class="submit-btn" style="background-color:rgb(19, 175, 58);">Update Patron</button>
+                <button type="button" class="submit-btn" onclick="window.location.href='<%= request.getContextPath() %>/views/patron/patron.jsp'" style="background-color:rgb(201, 43, 43);">Cancel</button>
             </div>
         </form>
     </div>
