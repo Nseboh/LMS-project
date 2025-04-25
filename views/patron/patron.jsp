@@ -143,6 +143,7 @@
                                 if (rs.next()) {
                                     totalUsers = rs.getInt("total");
                                 }
+<<<<<<< HEAD
                                 rs = stmt.executeQuery("SELECT COUNT(*) AS expired FROM patronmembership WHERE expiration_date < CURDATE()");
                                 if (rs.next()) {
                                     expiredUsers = rs.getInt("expired");
@@ -154,6 +155,15 @@
                                 rs = stmt.executeQuery("SELECT COUNT(*) AS female_count FROM patron WHERE gender = 'Female'");
                                 if (rs.next()) {
                                     femaleUsers = rs.getInt("female_count");
+=======
+                                rs = stmt.executeQuery("SELECT COUNT(*) AS male FROM patron WHERE gender = 'Male'");
+                                if (rs.next()) {
+                                    maleUsers = rs.getInt("Male");
+                                }
+                                rs = stmt.executeQuery("SELECT COUNT(*) AS female FROM patron WHERE gender = 'Female'");
+                                if (rs.next()) {
+                                    femaleUsers = rs.getInt("Female");
+>>>>>>> c14cda1afc916844b2cae7947702a41da15cee12
                                 }
                                 conn.close();
                             } catch (Exception e) {

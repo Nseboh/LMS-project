@@ -5,6 +5,10 @@
     String fullName = "";
     String contactNumber = "";
     String address = "";
+<<<<<<< HEAD
+=======
+    String age = "";
+>>>>>>> c14cda1afc916844b2cae7947702a41da15cee12
     String gender = "";
     Date dateJoined = null;
     Date expirationDate = null;
@@ -19,7 +23,11 @@
 
         // Fetch patron details
         String sql = "SELECT p.patron_id, p.first_name, p.last_name, pc.address, pc.phone AS contact, " +
+<<<<<<< HEAD
                      "pm.date_joined, pm.expiration_date, pm.status, p.gender " +
+=======
+                     "pm.date_joined, pm.expiration_date, pm.status, p.age, p.gender " +
+>>>>>>> c14cda1afc916844b2cae7947702a41da15cee12
                      "FROM patron p " +
                      "LEFT JOIN patroncontact pc ON p.patron_id = pc.patron_id " +
                      "LEFT JOIN patronmembership pm ON p.patron_id = pm.patron_id " +
@@ -32,6 +40,10 @@
             fullName = rs.getString("first_name") + " " + rs.getString("last_name");
             contactNumber = rs.getString("contact");
             address = rs.getString("address");
+<<<<<<< HEAD
+=======
+            age = rs.getString("age");
+>>>>>>> c14cda1afc916844b2cae7947702a41da15cee12
             gender = rs.getString("gender");
             dateJoined = rs.getDate("date_joined");
             expirationDate = rs.getDate("expiration_date");
@@ -126,6 +138,10 @@
             <p><strong>Full Name:</strong> <%= fullName %></p>
             <p><strong>Contact Number:</strong> <%= contactNumber %></p>
             <p><strong>Address:</strong> <%= address %></p>
+<<<<<<< HEAD
+=======
+            <p><strong>Age:</strong> <%= age %></p>
+>>>>>>> c14cda1afc916844b2cae7947702a41da15cee12
             <p><strong>Gender:</strong> <%= gender %></p>
             <p><strong>Date Joined:</strong> <%= dateJoined != null ? dateJoined.toString() : "N/A" %></p>
             <p><strong>Expiration Date:</strong> <%= expirationDate != null ? expirationDate.toString() : "N/A" %></p>

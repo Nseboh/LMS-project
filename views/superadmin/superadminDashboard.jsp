@@ -170,6 +170,16 @@
                 </div>
                 <div class="stat-card">
                     <div class="stat-header">
+<<<<<<< HEAD
+=======
+                        <i class="fas fa-clock" style="color:rgb(10, 18, 121);"></i>
+                        <h3>Expired</h3>
+                    </div>
+                    <p class="stat-number"><%= expiredUsers %></p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+>>>>>>> c14cda1afc916844b2cae7947702a41da15cee12
                         <i class="fas fa-male" style="color:rgb(10, 18, 121);"></i>
                         <h3>Male</h3>
                     </div>
