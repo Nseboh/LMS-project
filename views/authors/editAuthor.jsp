@@ -7,7 +7,6 @@
     String dateOfBirth = "";
     String nationality = "";
     String biography = "";
-    String email = "";
     String website = "";
 
     try {
@@ -23,7 +22,6 @@
             dateOfBirth = rs.getString("date_of_birth");
             nationality = rs.getString("nationality");
             biography = rs.getString("biography");
-            email = rs.getString("email");
             website = rs.getString("website");
         }
         conn.close();
@@ -65,16 +63,12 @@
                 <textarea id="biography" name="biography" rows="4" required><%= biography %></textarea>
             </div>
             <div class="form-group">
-                <label for="email">Email*</label>
-                <input type="email" id="email" name="email" value="<%= email %>" required>
-            </div>
-            <div class="form-group">
                 <label for="website">Website</label>
                 <input type="text" id="website" name="website" value="<%= website %>">
             </div>
             <div class="form-actions">
-                <button type="submit" class="submit-btn">Save</button>
-                <button type="button" class="cancel-btn" onclick="window.location.href='<%= request.getContextPath() %>/views/authors/author.jsp'">Cancel</button>
+                <button type="submit" class="cancel-btn" style="background-color:rgb(19, 175, 58); color:white;">Save</button>
+                <button type="button" class="cancel-btn" onclick="window.location.href='<%= request.getContextPath() %>/views/authors/author.jsp'" style="background-color:rgb(201, 43, 43); color:white;">Cancel</button>
             </div>
         </form>
     </div>

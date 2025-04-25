@@ -26,10 +26,6 @@
                     <input type="text" id="lastName" name="lastName" required>
                 </div>
                 <div class="form-group">
-                    <label for="age">Age*</label>
-                    <input type="text" id="age" name="age" required>
-                </div>
-                <div class="form-group">
                     <label for="gender">Gender*</label>
                     <select id="gender" name="gender" required>
                         <option value="Male">Male</option>
@@ -45,20 +41,8 @@
                     <input type="tel" id="phone" name="phone" pattern="[0-9]{10}" required>
                 </div>
                 <div class="form-group">
-                    <label for="email">Email*</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="emergencyContact">Emergency Contact*</label>
-                    <input type="tel" id="emergencyContact" name="emergencyContact" pattern="[0-9]{10}" required>
-                </div>
-                <div class="form-group">
-                    <label for="membershipType">Membership Type*</label>
-                    <select id="membershipType" name="membershipType" required>
-                        <option value="Standard">Standard</option>
-                        <option value="Premium">Premium</option>
-                        <option value="VIP">VIP</option>
-                    </select>
+                    <label for="dateJoined">Date Joined*</label>
+                    <input type="date" id="dateJoined" name="dateJoined" required>
                 </div>
                 <div class="form-group">
                     <label for="status">Status*</label>
@@ -69,8 +53,8 @@
                     </select>
                 </div>
                 <div class="form-actions">
-                    <button type="submit" class="submit-btn">Add Patron</button>
-                    <button type="button" class="cancel-btn" onclick="closeAddPatronModal()">Cancel</button>
+                    <button type="submit" class="cancel-btn" style="background-color:rgb(19, 175, 58); color: white;">Add Patron</button>
+                    <button type="button" class="cancel-btn" onclick="closeAddPatronModal()" style="background-color:rgb(201, 43, 43); color:white;">Cancel</button>
                 </div>
             </form>
         </div>

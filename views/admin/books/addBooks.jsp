@@ -115,8 +115,8 @@
                     </select>
                 </div>
                 <div class="form-actions">
-                    <button type="submit" class="submit-btn">Add Book</button>
-                    <button type="button" class="cancel-btn" onclick="closeAddBookModal()">Cancel</button>
+                    <button type="submit" class="cancel-btn" style="background-color:rgb(19, 175, 58); color: white;">Add Book</button>
+                    <button type="button" class="cancel-btn" onclick="closeAddBookModal()" style="background-color:rgb(201, 43, 43); color: white;">Cancel</button>
                 </div>
             </form>
         </div>

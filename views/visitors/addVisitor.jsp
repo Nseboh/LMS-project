@@ -17,7 +17,6 @@
                             document.getElementById('firstName').value = data.firstName;
                             document.getElementById('lastName').value = data.lastName;
                             document.getElementById('contactNumber').value = data.contactNumber;
-                            document.getElementById('email').value = data.email;
                             document.getElementById('gender').value = data.gender;
                             document.getElementById('status').value = data.status;
                             document.getElementById('timeOut').value = data.timeOut; // Optional
@@ -26,7 +25,6 @@
                             document.getElementById('firstName').value = '';
                             document.getElementById('lastName').value = '';
                             document.getElementById('contactNumber').value = '';
-                            document.getElementById('email').value = '';
                             document.getElementById('gender').value = 'Male'; // Default
                             document.getElementById('status').value = 'Pending'; // Default
                             document.getElementById('timeOut').value = ''; // Clear time out
@@ -58,10 +56,6 @@
                 <input type="tel" id="contactNumber" name="contactNumber" required>
             </div>
             <div class="form-group">
-                <label for="email">Email*</label>
-                <input type="email" id="email" name="email" required>
-            </div>
-            <div class="form-group">
                 <label for="gender">Gender*</label>
                 <select id="gender" name="gender" required>
                     <option value="Male">Male</option>
@@ -87,8 +81,8 @@
                 <input type="text" id="remarks" name="remarks" maxlength="255">
             </div>
             <div class="form-actions">
-                <button type="submit" class="submit-btn">Add Visitor</button>
-                <button type="button" class="cancel-btn" onclick="closeAddVisitorModal()">Cancel</button>
+                <button type="submit" class="cancel-btn" style="background-color:rgb(19, 175, 58); color:white;">Add Visitor</button>
+                <button type="button" class="cancel-btn" onclick="window.location.href='<%= request.getContextPath() %>/views/visitors/visitor.jsp'" style="background-color:rgb(201, 43, 43); color:white;">Cancel</button>
             </div>
         </form>
     </div>

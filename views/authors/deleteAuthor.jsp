@@ -22,6 +22,7 @@
         int rowsAffected = preparedStatement.executeUpdate();
         if (rowsAffected > 0) {
             session.setAttribute("success_message", "Author deleted successfully.");
+            response.sendRedirect("author.jsp");
         } else {
             session.setAttribute("error_message", "Error deleting author.");
         }
@@ -33,4 +34,3 @@
         if (connection != null) try { connection.close(); } catch (SQLException ignore) {}
     }
 %>
-<a href="<%= request.getContextPath() %>/views/authors/author.jsp">Back to Authors</a> 

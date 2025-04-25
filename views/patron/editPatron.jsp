@@ -6,20 +6,16 @@
     String firstName = "";
     String lastName = "";
     String address = "";
-    String email = "";
     String contact = "";
-    String emergencyContact = "";
-    String membershipType = "";
     String gender = "";
     String status = "";
-    String age = "";
 
     try {
         Class.forName("com.mysql.cj.jdbc.Driver");
         Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
 
         // Fetch patron details
-        String sql = "SELECT p.first_name, p.last_name, p.age, p.gender, pc.address, pc.phone, pc.email, pc.emergency_contact, pm.membership_type, pm.status " +
+        String sql = "SELECT p.first_name, p.last_name, p.gender, pc.address, pc.phone, pm.status " +
                      "FROM patron p " +
                      "LEFT JOIN patroncontact pc ON p.patron_id = pc.patron_id " +
                      "LEFT JOIN patronmembership pm ON p.patron_id = pm.patron_id " +
@@ -31,13 +27,9 @@
         if (rs.next()) {
             firstName = rs.getString("first_name");
             lastName = rs.getString("last_name");
-            age = rs.getString("age");
             gender = rs.getString("gender");
             address = rs.getString("address");
             contact = rs.getString("phone");
-            email = rs.getString("email");
-            emergencyContact = rs.getString("emergency_contact");
-            membershipType = rs.getString("membership_type");
             status = rs.getString("status");
         }
 
@@ -67,10 +59,7 @@
                 <label for="lastName">Last Name*</label>
                 <input type="text" id="lastName" name="lastName" value="<%= lastName %>" required>
             </div>
-            <div class="form-group">
-                <label for="age">Age*</label>
-                <input type="text" id="age" name="age" value="<%= age %>" required>
-            </div>
+
             <div class="form-group">
                 <label for="gender">Gender*</label>
                 <select id="gender" name="gender" required>
@@ -87,31 +76,15 @@
                 <input type="tel" id="contact" name="contact" value="<%= contact %>" required>
             </div>
             <div class="form-group">
-                <label for="email">Email*</label>
-                <input type="email" id="email" name="email" value="<%= email %>" required>
-            </div>
-            <div class="form-group">
-                <label for="emergencyContact">Emergency Contact*</label>
-                <input type="tel" id="emergencyContact" name="emergencyContact" value="<%= emergencyContact %>" required>
-            </div>
-            <div class="form-group">
-                <label for="membershipType">Membership Type*</label>
-                <select id="membershipType" name="membershipType" required>
-                    <option value="Standard" <%= membershipType.equals("Standard") ? "selected" : "" %>>Standard</option>
-                    <option value="Premium" <%= membershipType.equals("Premium") ? "selected" : "" %>>Premium</option>
-                    <option value="VIP" <%= membershipType.equals("VIP") ? "selected" : "" %>>VIP</option>
-                </select>
-            </div>
-            <div class="form-group">
                 <label for="status">Status*</label>
                 <select id="status" name="status" required>
                     <option value="Active" <%= status.equals("Active") ? "selected" : "" %>>Active</option>
-                    <option value="Inactive" <%= status.equals("Inactive") ? "selected" : "" %>>Inactive</option>
+                    <option value="Expired" <%= status.equals("Expired") ? "selected" : "" %>>Expired</option>
                 </select>
             </div>
             <div class="form-actions">
-                <button type="submit" class="submit-btn">Update Patron</button>
-                <button type="button" class="cancel-btn" onclick="window.location.href='<%= request.getContextPath() %>/views/patron/patron.jsp'">Cancel</button>
+                <button type="submit" class="submit-btn" style="background-color:rgb(19, 175, 58);">Update Patron</button>
+                <button type="button" class="submit-btn" onclick="window.location.href='<%= request.getContextPath() %>/views/patron/patron.jsp'" style="background-color:rgb(201, 43, 43);">Cancel</button>
             </div>
         </form>
     </div>

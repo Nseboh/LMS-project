@@ -131,8 +131,8 @@
                     <textarea id="remarks" name="remarks" rows="4" placeholder="Enter any remarks..." required></textarea>
                 </div>
                 <div class="form-actions">
-                    <button type="submit" class="submit-btn">Submit</button>
-                    <button type="button" class="cancel-btn" onclick="closeAddAttendanceModal()">Cancel</button>
+                    <button type="submit" class="submit-btn" style="background-color:rgb(19, 175, 58);">Submit</button>
+                    <button type="button" class="submit-btn" onclick="closeAddAttendanceModal()" style="background-color:rgb(201, 43, 43);">Cancel</button>
                 </div>
             </form>
         </div>

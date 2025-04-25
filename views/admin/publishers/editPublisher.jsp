@@ -58,8 +58,8 @@
                 <input type="text" id="website" name="website" value="<%= website %>">
             </div>
             <div class="form-actions">
-                <button type="submit" class="submit-btn">Save</button>
-                <button type="button" class="cancel-btn" onclick="window.location.href='publisher.jsp'">Cancel</button>
+                <button type="submit" class="submit-btn" style="background-color:rgb(19, 175, 58);">Save</button>
+                <button type="button" class="submit-btn" onclick="window.location.href='publisher.jsp'" style="background-color:rgb(201, 43, 43);">Cancel</button>
             </div>
         </form>
     </div>

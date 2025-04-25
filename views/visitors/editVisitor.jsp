@@ -6,7 +6,6 @@
     String firstName = "";
     String lastName = "";
     String contactNumber = "";
-    String email = "";
     String gender = "";
     String status = "";
     String timeIn = "";
@@ -22,7 +21,7 @@
         conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
 
         // Fetch visitor details
-        String sql = "SELECT v.first_name, v.last_name, v.contact_number, v.email, v.gender, vv.time_in, vv.time_out, vs.status, vs.remarks " +
+        String sql = "SELECT v.first_name, v.last_name, v.contact_number, v.gender, vv.time_in, vv.time_out, vs.status, vs.remarks " +
                      "FROM visitor v " +
                      "LEFT JOIN visitorvisit vv ON v.visitor_id = vv.visitor_id " +
                      "LEFT JOIN visitstatus vs ON v.visitor_id = vs.visitor_id " +
@@ -35,7 +34,6 @@
             firstName = rs.getString("first_name");
             lastName = rs.getString("last_name");
             contactNumber = rs.getString("contact_number");
-            email = rs.getString("email");
             gender = rs.getString("gender");
             timeIn = rs.getTime("time_in") != null ? rs.getTime("time_in").toString() : "";
             timeOut = rs.getTime("time_out") != null ? rs.getTime("time_out").toString() : "";
@@ -87,10 +85,6 @@
                 <input type="tel" id="contactNumber" name="contact_number" value="<%= contactNumber %>" required>
             </div>
             <div class="form-group">
-                <label for="email">Email*</label>
-                <input type="email" id="email" name="email" value="<%= email %>" required>
-            </div>
-            <div class="form-group">
                 <label for="gender">Gender*</label>
                 <select id="gender" name="gender" required>
                     <option value="Male" <%= gender.equals("Male") ? "selected" : "" %>>Male</option>
@@ -120,8 +114,8 @@
                 <textarea id="remarks" name="remarks" rows="4"><%= remarks %></textarea>
             </div>
             <div class="form-actions">
-                <button type="submit" class="submit-btn">Update Visitor</button>
-                <button type="button" class="cancel-btn" onclick="window.location.href='<%= request.getContextPath() %>/views/visitors/visitor.jsp'">Cancel</button>
+                <button type="submit" class="submit-btn" style="background-color:rgb(19, 175, 58);">Update Visitor</button>
+                <button type="button" class="submit-btn" onclick="window.location.href='<%= request.getContextPath() %>/views/visitors/visitor.jsp'" style="background-color:rgb(201, 43, 43);">Cancel</button>
             </div>
         </form>
     </div>

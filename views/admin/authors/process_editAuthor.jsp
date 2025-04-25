@@ -7,23 +7,21 @@
     String dateOfBirth = request.getParameter("date_of_birth");
     String nationality = request.getParameter("nationality");
     String biography = request.getParameter("biography");
-    String email = request.getParameter("email");
     String website = request.getParameter("website");
 
     try {
         Class.forName("com.mysql.cj.jdbc.Driver");
         Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
 
-        String sql = "UPDATE authors SET first_name=?, last_name=?, date_of_birth=?, nationality=?, biography=?, email=?, website=? WHERE author_id=?";
+        String sql = "UPDATE authors SET first_name=?, last_name=?, date_of_birth=?, nationality=?, biography=?, website=? WHERE author_id=?";
         PreparedStatement pstmt = conn.prepareStatement(sql);
         pstmt.setString(1, firstName);
         pstmt.setString(2, lastName);
         pstmt.setDate(3, java.sql.Date.valueOf(dateOfBirth));
         pstmt.setString(4, nationality);
         pstmt.setString(5, biography);
-        pstmt.setString(6, email);
-        pstmt.setString(7, website);
-        pstmt.setString(8, authorId);
+        pstmt.setString(6, website);
+        pstmt.setString(7, authorId);
 
         int rowsUpdated = pstmt.executeUpdate();
         if (rowsUpdated > 0) {

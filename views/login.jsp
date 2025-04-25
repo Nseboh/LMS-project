@@ -4,37 +4,33 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>JE.Library - Admin Login</title>
+        <title>Takoradi Library - Admin Login</title>
         <link rel="stylesheet" href="<%= request.getContextPath() %>/css/adminlogin.css">
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     </head>
     <body>
         <div class="container">
-            <nav class="sidebar">
+            <nav class="sidebar" style="background-color: #070D59;">
                 <div class="logo-section">
                     <div class="logo-img">
-                        <img src="<%= request.getContextPath() %>/images/img%201.jpeg" alt="Logo" style="border-radius: 50%; width: 40px; height: 40px;">
+                        <img src="<%= request.getContextPath() %>/images/TakoradiLibrary.jpeg" alt="Logo" style="border-radius: 50%; width: 40px; height: 40px;">
                     </div>
-                    <h1 class="logo-text">JE.Library</h1>
+                    <h1 class="logo-text" style="color:white;">Takoardi Library</h1>
                 </div>
-                <div class="settings-section">
-                    <div class="settings-wrapper">
-                        <span class="material-icons settings-icon">settings</span>
-                        <span class="settings-text">Settings</span>
-                    </div>
-                </div>
+                
             </nav>
 
             <main class="main-section">
-                <header class="header">
+                <header class="header" style="background-color:rgb(10, 18, 121);">
                     <h1>Admins Login</h1>
                 </header>
                 
                 <div class="content-wrapper" style="background-image: url('<%= request.getContextPath() %>/images/img%201.jpeg');">
                     <div class="login-card">
-                        <h2>Sign in</h2>
-                        <p class="subtitle">Make a new doc to bring your words, data,<br>and team together. For free</p>
+                        <h3>Sign in</h3>
+                        <h2 class="subtitle" style= "color: #070D59;">Welcome To Takoradi Library!!</h2>
+                        <p>Your Satisfaction Is Our Priority</p>
                         
                         <%-- Display error message if any --%>
                         <% if (request.getParameter("error") != null) { %>
@@ -59,7 +55,7 @@
                                 <a href="#">Forgot Password?</a>
                             </div>
                             
-                            <button type="submit" class="login-button">Login</button>
+                            <button type="submit" class="login-button"  style="background-color:rgb(10, 18, 121);">Login</button>
                         </form>
                     </div>
                 </div>

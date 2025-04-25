@@ -10,14 +10,27 @@
     String dateOfBirth = request.getParameter("date_of_birth");
     String nationality = request.getParameter("nationality");
     String biography = request.getParameter("biography");
-    String email = request.getParameter("email");
     String website = request.getParameter("website");
+
+    // Validate required fields
+    if (authorId == null || authorId.trim().isEmpty()) {
+        session.setAttribute("error_message", "Author ID is required");
+        response.sendRedirect("addAuthor.jsp");
+        return;
+    }
+
+    // Validate author ID format
+    if (!authorId.matches("AUTH[0-9]{4}")) {
+        session.setAttribute("error_message", "Invalid Author ID format. Must be AUTH followed by 4 digits");
+        response.sendRedirect("addAuthor.jsp");
+        return;
+    }
 
     try {
         // Insert into database
         Class.forName("com.mysql.cj.jdbc.Driver");
         Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
-        String sql = "INSERT INTO authors (author_id, first_name, last_name, date_of_birth, nationality, biography, email, website, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+        String sql = "INSERT INTO authors (author_id, first_name, last_name, date_of_birth, nationality, biography, website, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
         PreparedStatement pstmt = conn.prepareStatement(sql);
         pstmt.setString(1, authorId);
         pstmt.setString(2, firstName);
@@ -25,11 +38,12 @@
         pstmt.setString(4, dateOfBirth);
         pstmt.setString(5, nationality);
         pstmt.setString(6, biography);
-        pstmt.setString(7, email);
-        pstmt.setString(8, website);
+        pstmt.setString(7, website);
         pstmt.executeUpdate();
         conn.close();
-        response.sendRedirect("author.jsp"); // Redirect to the author list or another page
+
+        session.setAttribute("success_message", "Author added successfully!");
+        response.sendRedirect("author.jsp");
     } catch (SQLException sqlEx) {
         sqlEx.printStackTrace();
         session.setAttribute("error_message", "Database error: " + sqlEx.getMessage());

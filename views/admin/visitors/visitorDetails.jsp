@@ -71,7 +71,6 @@
             String firstName = "";
             String lastName = "";
             String contactNumber = "";
-            String email = "";
             String gender = "";
             String createdAt = "";
             String visitDate = "";
@@ -96,7 +95,6 @@
                     firstName = rsVisitor.getString("first_name");
                     lastName = rsVisitor.getString("last_name");
                     contactNumber = rsVisitor.getString("contact_number");
-                    email = rsVisitor.getString("email");
                     gender = rsVisitor.getString("gender");
                     createdAt = rsVisitor.getTimestamp("created_at").toString();
                 }
@@ -133,7 +131,6 @@
             <h2>Visitor Information</h2>
             <p><strong>Full Name:</strong> <%= firstName + " " + lastName %></p>
             <p><strong>Contact Number:</strong> <%= contactNumber %></p>
-            <p><strong>Email:</strong> <%= email %></p>
             <p><strong>Gender:</strong> <%= gender %></p>
             <p><strong>Created At:</strong> <%= createdAt %></p>
         </div>

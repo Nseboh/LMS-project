@@ -4,13 +4,9 @@
     String patronId = request.getParameter("patronId");
     String firstName = request.getParameter("firstName");
     String lastName = request.getParameter("lastName");
-    String age = request.getParameter("age");
     String gender = request.getParameter("gender");
     String address = request.getParameter("address");
     String contact = request.getParameter("contact");
-    String email = request.getParameter("email");
-    String emergencyContact = request.getParameter("emergencyContact");
-    String membershipType = request.getParameter("membershipType");
     String status = request.getParameter("status");
 
     Connection conn = null;
@@ -21,17 +17,16 @@
         conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
 
         // Update patron details
-        String sql = "UPDATE patron SET first_name = ?, last_name = ?, age = ?, gender = ? WHERE patron_id = ?";
+        String sql = "UPDATE patron SET first_name = ?, last_name = ?, gender = ? WHERE patron_id = ?";
         pstmt = conn.prepareStatement(sql);
         pstmt.setString(1, firstName);
         pstmt.setString(2, lastName);
-        pstmt.setString(3, age);
-        pstmt.setString(4, gender);
-        pstmt.setString(5, patronId);
+        pstmt.setString(3, gender);
+        pstmt.setString(4, patronId);
         pstmt.executeUpdate();
 
         // Update patron contact details
-        String sqlContact = "UPDATE patroncontact SET address = ?, phone = ?, email = ?, emergency_contact = ? WHERE patron_id = ?";
+        String sqlContact = "UPDATE patroncontact SET address = ?, phone = ? WHERE patron_id = ?";
         pstmt = conn.prepareStatement(sqlContact);
         pstmt.setString(1, address);
         pstmt.setString(2, contact);
@@ -41,11 +36,10 @@
         pstmt.executeUpdate();
 
         // Update patron membership details
-        String sqlMembership = "UPDATE patronmembership SET membership_type = ?, status = ? WHERE patron_id = ?";
+        String sqlMembership = "UPDATE patronmembership SET status = ? WHERE patron_id = ?";
         pstmt = conn.prepareStatement(sqlMembership);
-        pstmt.setString(1, membershipType);
-        pstmt.setString(2, status);
-        pstmt.setString(3, patronId);
+        pstmt.setString(1, status);
+        pstmt.setString(2, patronId);
         pstmt.executeUpdate();
 
         // Redirect to the patron list with success message

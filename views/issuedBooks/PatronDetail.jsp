@@ -4,15 +4,11 @@
     String patronId = request.getParameter("id");
     String fullName = "";
     String contactNumber = "";
-    String email = "";
     String address = "";
-    String membershipType = "";
-    String age = "";
     String gender = "";
     Date dateJoined = null;
     Date expirationDate = null;
     String status = "";
-
     Connection conn = null;
     PreparedStatement pstmt = null;
     ResultSet rs = null;
@@ -22,8 +18,8 @@
         conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
 
         // Fetch patron details
-        String sql = "SELECT p.patron_id, p.first_name, p.last_name, pc.address, pc.phone AS contact, pc.email, " +
-                     "pm.membership_type, pm.date_joined, pm.expiration_date, pm.status, p.age, p.gender " +
+        String sql = "SELECT p.patron_id, p.first_name, p.last_name, pc.address, pc.phone AS contact, " +
+                     "pm.date_joined, pm.expiration_date, pm.status, p.gender " +
                      "FROM patron p " +
                      "LEFT JOIN patroncontact pc ON p.patron_id = pc.patron_id " +
                      "LEFT JOIN patronmembership pm ON p.patron_id = pm.patron_id " +
@@ -35,27 +31,24 @@
         if (rs.next()) {
             fullName = rs.getString("first_name") + " " + rs.getString("last_name");
             contactNumber = rs.getString("contact");
-            email = rs.getString("email");
             address = rs.getString("address");
-            membershipType = rs.getString("membership_type");
-            age = rs.getString("age");
             gender = rs.getString("gender");
             dateJoined = rs.getDate("date_joined");
             expirationDate = rs.getDate("expiration_date");
             status = rs.getString("status");
         } else {
             session.setAttribute("error_message", "Patron not found.");
-            response.sendRedirect("lending.jsp");
+            response.sendRedirect("patron.jsp");
             return;
         }
     } catch (SQLException e) {
         e.printStackTrace();
         session.setAttribute("error_message", "Error fetching patron details: " + e.getMessage());
-        response.sendRedirect("lending.jsp");
+        response.sendRedirect("patron.jsp");
     } catch (Exception e) {
         e.printStackTrace();
         session.setAttribute("error_message", "An unexpected error occurred: " + e.getMessage());
-        response.sendRedirect("lending.jsp");
+        response.sendRedirect("patron.jsp");
     } finally {
         if (rs != null) try { rs.close(); } catch (SQLException e) {}
         if (pstmt != null) try { pstmt.close(); } catch (SQLException e) {}
@@ -132,16 +125,13 @@
         <div class="patron-details">
             <p><strong>Full Name:</strong> <%= fullName %></p>
             <p><strong>Contact Number:</strong> <%= contactNumber %></p>
-            <p><strong>Email:</strong> <%= email %></p>
             <p><strong>Address:</strong> <%= address %></p>
-            <p><strong>Membership Type:</strong> <%= membershipType %></p>
-            <p><strong>Age:</strong> <%= age %></p>
             <p><strong>Gender:</strong> <%= gender %></p>
             <p><strong>Date Joined:</strong> <%= dateJoined != null ? dateJoined.toString() : "N/A" %></p>
             <p><strong>Expiration Date:</strong> <%= expirationDate != null ? expirationDate.toString() : "N/A" %></p>
             <p><strong>Status:</strong> <%= status %></p>
         </div>
-        <button onclick="window.location.href='lending.jsp'" class="cancel-btn">Back to Lending</button>
+        <button onclick="window.location.href='lending.jsp'" class="cancel-btn" style="background-color:rgb(201, 43, 43);">Back</button>
     </div>
 </body>
 </html>

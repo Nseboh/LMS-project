@@ -107,8 +107,8 @@
                 </select>
             </div>
             <div class="form-actions">
-                <button type="submit" class="submit-btn">Update Lending</button>
-                <button type="button" class="submit-btn" onclick="window.location.href='lending.jsp'">Cancel</button>
+                <button type="submit" class="submit-btn" style="background-color:rgb(19, 175, 58);">Update Lending</button>
+                <button type="button" class="submit-btn" onclick="window.location.href='lending.jsp'"style="background-color:rgb(201, 43, 43);">Cancel</button>
             </div>
         </form>
     </div>

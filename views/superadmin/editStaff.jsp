@@ -105,8 +105,8 @@
                     <option value="Admin" <%= roleName.equals("Admin") ? "selected" : "" %>>Admin</option>
                 </select>
             </div>
-            <button type="submit" class="submit-btn">Update Staff</button>
-            <button type="button" class="cancel-btn" onclick="window.location.href='<%= request.getContextPath() %>/views/superadmin/superadminDashboard.jsp'">Cancel</button>
+            <button type="submit" class="submit-btn" style="background-color:rgb(19, 175, 58);">Update Staff</button>
+            <button type="button" class="cancel-btn" onclick="window.location.href='<%= request.getContextPath() %>/views/superadmin/superadminDashboard.jsp'" style="background-color:rgb(201, 43, 43); color: white;">Cancel</button>
         </form>
     </div>
     <style>

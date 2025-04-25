@@ -20,22 +20,20 @@
     String patronId = request.getParameter("patronId");
     String firstName = request.getParameter("firstName");
     String lastName = request.getParameter("lastName");
-    String age = request.getParameter("age");
     String gender = request.getParameter("gender");
     String address = request.getParameter("address");
     String phone = request.getParameter("phone");
-    String email = request.getParameter("email");
-    String emergencyContact = request.getParameter("emergencyContact");
-    String membershipType = request.getParameter("membershipType");
     String status = request.getParameter("status");
+    String dateJoined = request.getParameter("dateJoined"); // Get the manually entered date
 
     // Generate password and barcode
     String password = generatePassword();
     String barcode = generateBarcode();
     System.out.println("Generated Barcode: " + barcode); // Log the generated barcode
 
-    LocalDate dateJoined = LocalDate.now();
-    LocalDate expirationDate = dateJoined.plusDays(365); // Calculate expiration date
+    // Calculate expiration date as 90 days after the date joined
+    LocalDate joinDate = LocalDate.parse(dateJoined);
+    LocalDate expirationDate = joinDate.plusDays(90); // Changed from 365 to 90 days
 
     Connection conn = null;
     PreparedStatement pstmtPatron = null;
@@ -47,35 +45,31 @@
         conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
 
         // Insert into patron table
-        String sqlPatron = "INSERT INTO patron (patron_id, first_name, last_name, age, gender, password, barcode) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sqlPatron = "INSERT INTO patron (patron_id, first_name, last_name, gender, password, barcode) VALUES (?, ?, ?, ?, ?, ?, ?)";
         pstmtPatron = conn.prepareStatement(sqlPatron);
         pstmtPatron.setString(1, patronId);
         pstmtPatron.setString(2, firstName);
         pstmtPatron.setString(3, lastName);
-        pstmtPatron.setString(4, age);
-        pstmtPatron.setString(5, gender);
-        pstmtPatron.setString(6, password);
-        pstmtPatron.setString(7, barcode);
+        pstmtPatron.setString(4, gender);
+        pstmtPatron.setString(5, password);
+        pstmtPatron.setString(6, barcode);
         pstmtPatron.executeUpdate();
 
         // Insert into patroncontact table
-        String sqlContact = "INSERT INTO patroncontact (patron_id, address, phone, email, emergency_contact) VALUES (?, ?, ?, ?, ?)";
+        String sqlContact = "INSERT INTO patroncontact (patron_id, address, phone) VALUES (?, ?, ?)";
         pstmtContact = conn.prepareStatement(sqlContact);
         pstmtContact.setString(1, patronId);
         pstmtContact.setString(2, address);
         pstmtContact.setString(3, phone);
-        pstmtContact.setString(4, email);
-        pstmtContact.setString(5, emergencyContact);
         pstmtContact.executeUpdate();
 
-        // Insert into patronmembership table
-        String sqlMembership = "INSERT INTO patronmembership (patron_id, membership_type, date_joined, expiration_date, status) VALUES (?, ?, ?, ?, ?)";
+        // Insert into patronmembership table with 90-day expiration
+        String sqlMembership = "INSERT INTO patronmembership (patron_id, date_joined, expiration_date, status) VALUES (?, ?, ?, ?)";
         pstmtMembership = conn.prepareStatement(sqlMembership);
         pstmtMembership.setString(1, patronId);
-        pstmtMembership.setString(2, membershipType);
-        pstmtMembership.setDate(3, java.sql.Date.valueOf(dateJoined)); // Date joined
-        pstmtMembership.setDate(4, java.sql.Date.valueOf(expirationDate)); // Expiration date
-        pstmtMembership.setString(5, status);
+        pstmtMembership.setDate(2, java.sql.Date.valueOf(dateJoined));
+        pstmtMembership.setDate(3, java.sql.Date.valueOf(expirationDate));
+        pstmtMembership.setString(4, status);
         pstmtMembership.executeUpdate();
 
         // Redirect to the patron list with success message

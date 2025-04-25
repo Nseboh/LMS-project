@@ -5,7 +5,6 @@
     String firstName = request.getParameter("first_name");
     String lastName = request.getParameter("last_name");
     String contactNumber = request.getParameter("contact_number");
-    String email = request.getParameter("email");
     String gender = request.getParameter("gender");
     String timeIn = request.getParameter("time_in");
     String timeOut = request.getParameter("time_out");
@@ -20,14 +19,13 @@
         conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms", "root", "Righteous050598$");
 
         // Update visitor details
-        String sqlVisitor = "UPDATE visitor SET first_name=?, last_name=?, contact_number=?, email=?, gender=? WHERE visitor_id=?";
+        String sqlVisitor = "UPDATE visitor SET first_name=?, last_name=?, contact_number=?, gender=? WHERE visitor_id=?";
         pstmt = conn.prepareStatement(sqlVisitor);
         pstmt.setString(1, firstName);
         pstmt.setString(2, lastName);
         pstmt.setString(3, contactNumber);
-        pstmt.setString(4, email);
-        pstmt.setString(5, gender);
-        pstmt.setString(6, visitorId);
+        pstmt.setString(4, gender);
+        pstmt.setString(5, visitorId);
         pstmt.executeUpdate();
 
         // Update visit details if they exist

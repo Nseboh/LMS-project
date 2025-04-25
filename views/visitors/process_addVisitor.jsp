@@ -6,7 +6,6 @@
     String firstName = request.getParameter("firstName");
     String lastName = request.getParameter("lastName");
     String contactNumber = request.getParameter("contactNumber");
-    String email = request.getParameter("email");
     String gender = request.getParameter("gender");
     String timeOut = request.getParameter("timeOut"); // This can be null
     String timeIn = new java.sql.Time(System.currentTimeMillis()).toString(); // Automatically set current time as Time In
@@ -64,14 +63,13 @@
             response.sendRedirect("visitor.jsp");
         } else {
             // If the visitor does not exist, insert their details
-            String sqlVisitor = "INSERT INTO visitor (visitor_id, first_name, last_name, contact_number, email, gender, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())";
+            String sqlVisitor = "INSERT INTO visitor (visitor_id, first_name, last_name, contact_number, gender, created_at) VALUES (?, ?, ?, ?, ?, NOW())";
             pstmtVisitor = conn.prepareStatement(sqlVisitor);
             pstmtVisitor.setString(1, visitorId);
             pstmtVisitor.setString(2, firstName);
             pstmtVisitor.setString(3, lastName);
             pstmtVisitor.setString(4, contactNumber);
-            pstmtVisitor.setString(5, email);
-            pstmtVisitor.setString(6, gender);
+            pstmtVisitor.setString(5, gender);
             pstmtVisitor.executeUpdate();
 
             // Insert visit details
